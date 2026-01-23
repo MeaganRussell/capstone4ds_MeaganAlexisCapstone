@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Meagan Russell (Advisor: Dr. Cohen)">
-<meta name="dcterms.date" content="2026-01-19">
+<meta name="dcterms.date" content="2026-01-23">
 
 <title>Predicting Flood Severity of Northwest Florida Counties using Random Forest Regression Modeling - Spring 2026</title>
 <style>
@@ -3089,7 +3089,7 @@ vertical-align: -.125em;
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 19, 2026</p>
+      <p class="date">January 23, 2026</p>
     </div>
   </div>
   
@@ -3121,10 +3121,19 @@ to edit)
 <p><strong>Paper two: Machine Learning Classification of Significant Tornadoes and Hail in the United States Using ERA5 Proximity Soundings</strong></p>
 <p>In this paper the authors compared logistic regression, gaussian naive bayes, support vector machines, decision trees, adaptive boosting, gradient boosting, and random forest classification to see which model could best predict the severity class of tornadoes and hail events (severe vs. significant-severe). The data used in this study was collected from two sources: ERA5 for the weather and climate and NOAA for the actual storm events. The goal was to predict the severity of the storms with the weather and climate data before known events. To test the models the authors used validation techniques, multiple skill metrics, and frequency. For instance, the authors tested the models by leaving one year out for cross validation and they evaluated model performance using the critical success index (CSI). Of the models used, Random Forest, was the best model. It was the most accurate and it didn’t over or under estimate the severity of the storms. The authors also state that Random Forest can potentially be used for real-world forecasting applications.</p>
 <p>Cite new paper <span class="citation" data-cites="Gensini2021SevereML">Gensini et al. (<a href="#ref-Gensini2021SevereML" role="doc-biblioref">2021</a>)</span></p>
+</section>
+<section id="week-2-individual-research" class="level2">
+<h2 class="anchored" data-anchor-id="week-2-individual-research">Week 2: Individual Research</h2>
+<p>**Paper one:</p>
+<p>This paper compares linear regression, support vector machines (svm), random forest, xgboost, and a hybrid model of the models to determine which model/hybrid model is the best at predicting the severity of flood damage. The authors used hictorical flood records to determine severity. They used Total Damage as the main variable to predict severity. The authors sorted the floods by total damage, smallest amount to largest, and then split the groups evenly. The groups were defined as low-severity, medium-severity, and high-severity. To verify that this classification of severity was accurate the authors looked at the number of deaths, number of displaced individuals, and the number of people affected. They found that the number of those three variables increased with the severity class already defined. The authors trained the models to evaulate which model/hybrid model was the most accurate at predicting severity. The authors found that the hybrid model that combined random forest, support vector machine, and xgboost was the most accurate, while XGBoost came in second and Random Forest was third. Overall, the study found that combining models resulted in a more accurate prediction, high-severity floods were eaiser to classify than moderate-severity floods, and flood severity can be predicted using machine learning.</p>
+<p>Cite new paper <span class="citation" data-cites="AkshayFloodSeverity">Akshay et al. (<a href="#ref-AkshayFloodSeverity" role="doc-biblioref">2021</a>)</span></p>
 
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-AkshayFloodSeverity" class="csl-entry" role="listitem">
+Akshay, S. et al. 2021. <span>“Predicting Flood Severity Using Machine Learning and Hybrid Models.”</span> <em>International Journal of Disaster Risk Reduction</em> —: —.
+</div>
 <div id="ref-Gensini2021SevereML" class="csl-entry" role="listitem">
 Gensini, Vittorio A., Cody Converse, Walker S. Ashley, and Mateusz Taszarek. 2021. <span>“Machine Learning Classification of Significant Tornadoes and Hail in the United States Using ERA5 Proximity Soundings.”</span> <em>Weather and Forecasting</em> 36 (6): 2143–60.
 </div>
