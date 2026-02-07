@@ -24,6 +24,29 @@ Slides: [slides.html](slides.html){target="_blank"} ( Go to `slides.qmd`
 to edit)
 -->
 
+## Introduction
+
+Flooding is caused by many mechanisms, including when either heavy rainfall causes rivers to overflow, when impervious surfaces reduce water infiltration, and/or when soil becomes oversaturated (@Javadinejad2022). Flash floods are considered to be one of the most severe natural disasters due to their rapid onset, unpredictability, infrastructure damage, and associated fatalities (@Diakakis2020). Infrastructure and agricultural damage costs have steadily increased in the twentieth century (@Saharia2017). According to the IPCC, the severity and frequency of flood-causing severe storms will likely increase due to climate change (@IPCC2021Chapter11). Due to Northwest Florida’s location relative to the Gulf of Mexico and major hurricane paths, most flooding research has focused on sea-level rise and coastal flooding, leaving inland flood risk understudied (@Bilskie2014Dynamics; @Morss2024Storm). Growing evidence of machine learning models' capabilities to accurately predict storm severity and susceptibility highlights a major opportunity to apply these models to Northwest Florida (@Gensini2021SevereML; @Akshay2021FloodSeverity; @Chen2022RandomForestGeo).
+
+Random Forest (RF) is a type of machine learning algorithm that predicts the dependent variable based on independent variables (@Salman2024RandomForest). Errors produced by the random forest training can be counteracted by increasing the number of samples and trees of classification (@Wang2015FloodRF). Additionally, each decision tree’s selection of data is random, which prevents the model from memorizing the data (@Salman2024RandomForest). The RF application allowed for the importance of each variable to be assessed, and each index contribution to the overall risk was calculated pertaining to the relevant study of interest in China (@Wang2015FloodRF). The RF technique is optimal for performing hydrological studies due to the ability of the machine learning model to map flood risk analysis for hazard assessment with a low-cost application of the non-traditional model compared to rainfall-runoff models (@Zhu2022FloodRF).  For instance,  a machine learning study in 2024 using 16 flood risk factors (FRFs), including historic flood damage locations, found that several high and very high flood risk areas closely overlapped with FEMA’s 100-year floodplain in Tampa Bay (@Dey2024). The random forest model was able to reproduce the characteristics of the studied flood events and represented the daily flood discharge well in comparison with the hydromad modeling (@Schoppa2020RFDischarge). RF is a smart model that uses simple models, aka decision trees (@Salman2024RandomForest). 
+
+Northwest Florida, often referred to as the Florida Panhandle, is home to 16 counties: Escambia, Santa Rosa, Okaloosa, Walton, Holmes, Washington, Bay, Jackson, Calhoun, Gulf, Liberty, Franklin, Gadsden, Leon, Wakulla, and Jefferson. Since January 1996, these counties have had 1,052 floods, 790 of which were flash floods and 262 non-flash floods. Flooding has resulted in approximately $656 million in property damage throughout the counties, with Escambia County ranking number one in damage with approximately $152 million since 1996. This study will be utilizing RF to predict flood severity in Northwest Florida based on an index created using the number of injuries, number of deaths, time of flooding event, type of flood (flash and non-flash), and property damage. This type of RF modeling has not been used at a county level in Northwest Florida and most flooding research is focused on coastal flooding due to the counties being in major hurricane paths. This is important because floods are not uniform for every county and mitigation planning is an important part of preparing for natural hazards. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Week 1 - Individual Research:
 
 **Paper One: Random Forest Algorithm Overview**
