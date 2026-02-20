@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Meagan Russell (Advisor: Dr. Cohen)">
-<meta name="dcterms.date" content="2026-02-12">
+<meta name="dcterms.date" content="2026-02-20">
 
 <title>Predicting Flood Severity of Northwest Florida Counties using Random Forest Regression Modeling - Spring 2026</title>
 <style>
@@ -20,6 +20,40 @@ ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
 width: 0.8em;
 margin: 0 0.8em 0.2em -1em;  vertical-align: middle;
+}
+
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+}
+pre.numberSource { margin-left: 3em; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 
 div.csl-bib-body { }
@@ -3089,7 +3123,7 @@ vertical-align: -.125em;
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 12, 2026</p>
+      <p class="date">February 20, 2026</p>
     </div>
   </div>
   
@@ -3113,6 +3147,99 @@ to edit)
 <p>Flooding is caused by many mechanisms, including when heavy rainfall causes rivers to overflow, when impervious surfaces reduce water infiltration, and/or when soil becomes oversaturated (<span class="citation" data-cites="Javadinejad2022">Javadinejad (<a href="#ref-Javadinejad2022" role="doc-biblioref">2022</a>)</span>; <span class="citation" data-cites="Lecce2000FloodTiming">Lecce (<a href="#ref-Lecce2000FloodTiming" role="doc-biblioref">2000</a>)</span>). Flash floods are considered to be one of the most severe natural disasters due to their rapid onset, unpredictability, infrastructure damage, and associated fatalities (<span class="citation" data-cites="Diakakis2020">Diakakis et al. (<a href="#ref-Diakakis2020" role="doc-biblioref">2020</a>)</span>; <span class="citation" data-cites="Sadkou2024FlashFloods">Sadkou et al. (<a href="#ref-Sadkou2024FlashFloods" role="doc-biblioref">2024</a>)</span>). Infrastructure and agricultural damage costs have steadily increased in the twentieth century (<span class="citation" data-cites="Saharia2017">Saharia et al. (<a href="#ref-Saharia2017" role="doc-biblioref">2017</a>)</span>). According to the IPCC, the severity and frequency of flood-causing severe storms will likely increase due to climate change (<span class="citation" data-cites="IPCC2021Chapter11">Intergovernmental Panel on Climate Change (<a href="#ref-IPCC2021Chapter11" role="doc-biblioref">2021</a>)</span>; <span class="citation" data-cites="Halsnaes2023FloodModels">Halsnæs et al. (<a href="#ref-Halsnaes2023FloodModels" role="doc-biblioref">2023</a>)</span>). Due to Northwest Florida’s location relative to the Gulf of Mexico and major hurricane paths, most flooding research has focused on sea-level rise and coastal flooding, leaving inland flood risk understudied (<span class="citation" data-cites="Bilskie2014Dynamics">Bilskie et al. (<a href="#ref-Bilskie2014Dynamics" role="doc-biblioref">2014</a>)</span>; <span class="citation" data-cites="Morss2024Storm">Morss et al. (<a href="#ref-Morss2024Storm" role="doc-biblioref">2024</a>)</span>). Floods are extremely important to keep track of as they prove to contribute to human deaths, property damage, ecosystem changes, and social-economic losses (<span class="citation" data-cites="Chen2020FloodSusceptibility">W. Chen et al. (<a href="#ref-Chen2020FloodSusceptibility" role="doc-biblioref">2020</a>)</span>). Growing evidence of machine learning models’ capabilities to accurately predict storm severity and susceptibility highlights a major opportunity to apply these models to Northwest Florida (<span class="citation" data-cites="Gensini2021SevereML">Gensini et al. (<a href="#ref-Gensini2021SevereML" role="doc-biblioref">2021</a>)</span>; <span class="citation" data-cites="Akshay2021FloodSeverity">Akshay et al. (<a href="#ref-Akshay2021FloodSeverity" role="doc-biblioref">2021</a>)</span>; <span class="citation" data-cites="Chen2022RandomForestGeo">Z. Chen et al. (<a href="#ref-Chen2022RandomForestGeo" role="doc-biblioref">2022</a>)</span>).</p>
 <p>Random Forest (RF) is a type of machine learning algorithm that predicts the dependent variable based on independent variables (<span class="citation" data-cites="Salman2024RandomForest">Salman, Kalakech, and Steiti (<a href="#ref-Salman2024RandomForest" role="doc-biblioref">2024</a>)</span>). RF is a smart model that uses simple models, aka decision trees (<span class="citation" data-cites="Salman2024RandomForest">Salman, Kalakech, and Steiti (<a href="#ref-Salman2024RandomForest" role="doc-biblioref">2024</a>)</span>). Errors produced by the random forest training can be counteracted by increasing the number of samples and trees of classification (<span class="citation" data-cites="Wang2015FloodRF">Wang et al. (<a href="#ref-Wang2015FloodRF" role="doc-biblioref">2015</a>)</span>). Additionally, each decision tree’s selection of data is random, which prevents the model from memorizing the data (<span class="citation" data-cites="Salman2024RandomForest">Salman, Kalakech, and Steiti (<a href="#ref-Salman2024RandomForest" role="doc-biblioref">2024</a>)</span>). The RF application allowed for the importance of each variable to be assessed, and each index contribution to the overall risk was calculated pertaining to the relevant study of interest in China (<span class="citation" data-cites="Wang2015FloodRF">Wang et al. (<a href="#ref-Wang2015FloodRF" role="doc-biblioref">2015</a>)</span>). The RF technique is optimal for performing hydrological studies due to the ability of the machine learning model to map flood risk analysis for hazard assessment with a low-cost application of the non-traditional model compared to rainfall-runoff models (<span class="citation" data-cites="Zhu2022FloodRF">Zhu and Zhang (<a href="#ref-Zhu2022FloodRF" role="doc-biblioref">2022</a>)</span>). For instance, a machine learning study in 2024 using 16 flood risk factors (FRFs), including historic flood damage locations, found that several high and very high flood risk areas closely overlapped with FEMA’s 100-year floodplain in Tampa Bay (<span class="citation" data-cites="Dey2024">Dey et al. (<a href="#ref-Dey2024" role="doc-biblioref">2024</a>)</span>). In another hydrological study, RF was able to reproduce the characteristics of the studied flood events and represented the daily flood discharge well in comparison with the hydromad modeling (<span class="citation" data-cites="Schoppa2020RFDischarge">Schoppa, Disse, and Bachmair (<a href="#ref-Schoppa2020RFDischarge" role="doc-biblioref">2020</a>)</span>). As research progresses, it is noted that identifying key driving factors and validating them via machine learning is a key driver in precision flood prediction (<span class="citation" data-cites="Tan2024FlashFloodDrivers">Tan et al. (<a href="#ref-Tan2024FlashFloodDrivers" role="doc-biblioref">2024</a>)</span>).</p>
 <p>Northwest Florida, often referred to as the Florida Panhandle, is home to 16 counties: Escambia, Santa Rosa, Okaloosa, Walton, Holmes, Washington, Bay, Jackson, Calhoun, Gulf, Liberty, Franklin, Gadsden, Leon, Wakulla, and Jefferson. Since January 1996, these counties have had 1,052 floods, 790 of which were flash floods and 262 non-flash floods. Flooding has resulted in approximately $656 million in property damage throughout the counties, with Escambia County ranking number one in damage with approximately $152 million since 1996 (<span class="citation" data-cites="NOAAStormEvents">National Oceanic and Atmospheric Administration (<a href="#ref-NOAAStormEvents" role="doc-biblioref">2024</a>)</span>). This study will be utilizing RF to predict flood severity in Northwest Florida based on an index created using the number of injuries, number of deaths, time of flooding event, type of flood (flash and non-flash), and property damage. This type of RF modeling has not been used at a county level in Northwest Florida and most flooding research is focused on coastal flooding due to the counties being in major hurricane paths. This is important because floods are not uniform for every county and mitigation planning is an important part of preparing for natural hazards.</p>
+</section>
+<section id="data-source" class="level2">
+<h2 class="anchored" data-anchor-id="data-source">Data Source</h2>
+<div class="cell">
+<style type="text/css">
+caption {
+font-size: 24px !important;
+font-weight: bold;
+}
+</style>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creae vectors for each column of my table</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dbplyr)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>Variable <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;EVENT_TYPE&quot;</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;BEGIN_DATE_TIME&quot;</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;END_DATE_TIME&quot;</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;CZ_NAME&quot;</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;DAMAGE_PROPERTY&quot;</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;INJURIES_DIRECT&quot;</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;DEATHS_DIRECT&quot;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>Definition <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Type of severe weather event (e.g., Flood, Flash Flood).&quot;</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Date and time when the event began.&quot;</span>,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Date and time when the event ended.&quot;</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Name of the county or zone where the event occurred.&quot;</span>,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Estimated property damage caused by the event in U.S. dollars.&quot;</span>,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Number of direct injuries attributed to the event.&quot;</span>,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Number of direct fatalities attributed to the event.&quot;</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine vectors into a data frame</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>NOAA_Variables <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(Variable, Definition)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(NOAA_Variables, <span class="at">caption =</span> <span class="st">&quot;Table 1: NOAA Storm Events Data Dictionary (Variables Used)&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Table 1: NOAA Storm Events Data Dictionary (Variables Used)</caption>
+<colgroup>
+<col style="width: 20%">
+<col style="width: 79%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Variable</th>
+<th style="text-align: left;">Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">EVENT_TYPE</td>
+<td style="text-align: left;">Type of severe weather event (e.g., Flood, Flash Flood).</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BEGIN_DATE_TIME</td>
+<td style="text-align: left;">Date and time when the event began.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">END_DATE_TIME</td>
+<td style="text-align: left;">Date and time when the event ended.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CZ_NAME</td>
+<td style="text-align: left;">Name of the county or zone where the event occurred.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DAMAGE_PROPERTY</td>
+<td style="text-align: left;">Estimated property damage caused by the event in U.S. dollars.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">INJURIES_DIRECT</td>
+<td style="text-align: left;">Number of direct injuries attributed to the event.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">DEATHS_DIRECT</td>
+<td style="text-align: left;">Number of direct fatalities attributed to the event.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
 </section>
 
