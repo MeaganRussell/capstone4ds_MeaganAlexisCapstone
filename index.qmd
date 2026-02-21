@@ -32,7 +32,11 @@ Random Forest (RF) is a type of machine learning algorithm that predicts the dep
 
 Northwest Florida, often referred to as the Florida Panhandle, is home to 16 counties: Escambia, Santa Rosa, Okaloosa, Walton, Holmes, Washington, Bay, Jackson, Calhoun, Gulf, Liberty, Franklin, Gadsden, Leon, Wakulla, and Jefferson. Since January 1996, these counties have had 1,052 floods, 790 of which were flash floods and 262 non-flash floods. Flooding has resulted in approximately $656 million in property damage throughout the counties, with Escambia County ranking number one in damage with approximately $152 million since 1996 (@NOAAStormEvents). This study will be utilizing RF to predict flood severity in Northwest Florida based on an index created using the number of injuries, number of deaths, time of flooding event, type of flood (flash and non-flash), and property damage. This type of RF modeling has not been used at a county level in Northwest Florida and most flooding research is focused on coastal flooding due to the counties being in major hurricane paths. This is important because floods are not uniform for every county and mitigation planning is an important part of preparing for natural hazards. 
 
-## Data Source
+## Data and Visualization
+
+Data source: https://www.ncei.noaa.gov/stormevents/
+
+In this section, our project focuses on the Random Forest Regression Analysis of flood severity predictability, utilizing the National Oceanic and Atmospheric Administration (NOAA) storm events data set. Variables in the NOAA storm events data set that will be used in this study are listed in Table 1. This data set can be split into 70/30 training and testing to evaluate the model’s accuracy. To do this we will create a severity index (Table 2) based off of the variables in table one for the 70% split that will be used for training. For the 30% split the raw data for the same variables will be used to check the accuracy of Random forest's ability to predict the flood severity index. The severity index will be used to classify the flood event as low (0-1), medium (2-4), or high (5-7).
 
 
 
@@ -57,8 +61,6 @@ library(knitr)
 Variable <- c(
     "EVENT_TYPE",
     "BEGIN_DATE_TIME",
-    "END_DATE_TIME",
-    "CZ_NAME",
     "DAMAGE_PROPERTY",
     "INJURIES_DIRECT",
     "DEATHS_DIRECT"
@@ -66,8 +68,6 @@ Variable <- c(
 Definition <- c(
     "Type of severe weather event (e.g., Flood, Flash Flood).",
     "Date and time when the event began.",
-    "Date and time when the event ended.",
-    "Name of the county or zone where the event occurred.",
     "Estimated property damage caused by the event in U.S. dollars.",
     "Number of direct injuries attributed to the event.",
     "Number of direct fatalities attributed to the event."
@@ -78,6 +78,40 @@ Definition <- c(
 NOAA_Variables <- data.frame(Variable, Definition)
 
 kable(NOAA_Variables, caption = "Table 1: NOAA Storm Events Data Dictionary (Variables Used)")
+```
+```{r}
+Classifier <- c(
+    "Flood",
+    "Flash Flood",
+    "Daylight",
+    "Dusk and Dawn",
+    "Nighttime",
+    "No Deaths or Injuries",
+    "Injuries (no deaths)",
+    "Deaths",
+    "Property and Crop Damage < $100,000",
+    "Property and Crop Damage $100,000 - $500,000",
+    "Property and Crop Damage > $500,000"
+  )
+Value <- c(
+    "0",
+    "1",
+    "0",
+    "1",
+    "2",
+    "0",
+    "1",
+    "2",
+    "0",
+    "1",
+    "2"
+  )
+
+# Combine vectors into a data frame
+
+NOAA_Class <- data.frame(Classifier, Value)
+
+kable(NOAA_Class, caption = "Table 2: Flood Severity Index")
 
 ```
 

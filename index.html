@@ -3148,8 +3148,10 @@ to edit)
 <p>Random Forest (RF) is a type of machine learning algorithm that predicts the dependent variable based on independent variables (<span class="citation" data-cites="Salman2024RandomForest">Salman, Kalakech, and Steiti (<a href="#ref-Salman2024RandomForest" role="doc-biblioref">2024</a>)</span>). RF is a smart model that uses simple models, aka decision trees (<span class="citation" data-cites="Salman2024RandomForest">Salman, Kalakech, and Steiti (<a href="#ref-Salman2024RandomForest" role="doc-biblioref">2024</a>)</span>). Errors produced by the random forest training can be counteracted by increasing the number of samples and trees of classification (<span class="citation" data-cites="Wang2015FloodRF">Wang et al. (<a href="#ref-Wang2015FloodRF" role="doc-biblioref">2015</a>)</span>). Additionally, each decision tree’s selection of data is random, which prevents the model from memorizing the data (<span class="citation" data-cites="Salman2024RandomForest">Salman, Kalakech, and Steiti (<a href="#ref-Salman2024RandomForest" role="doc-biblioref">2024</a>)</span>). The RF application allowed for the importance of each variable to be assessed, and each index contribution to the overall risk was calculated pertaining to the relevant study of interest in China (<span class="citation" data-cites="Wang2015FloodRF">Wang et al. (<a href="#ref-Wang2015FloodRF" role="doc-biblioref">2015</a>)</span>). The RF technique is optimal for performing hydrological studies due to the ability of the machine learning model to map flood risk analysis for hazard assessment with a low-cost application of the non-traditional model compared to rainfall-runoff models (<span class="citation" data-cites="Zhu2022FloodRF">Zhu and Zhang (<a href="#ref-Zhu2022FloodRF" role="doc-biblioref">2022</a>)</span>). For instance, a machine learning study in 2024 using 16 flood risk factors (FRFs), including historic flood damage locations, found that several high and very high flood risk areas closely overlapped with FEMA’s 100-year floodplain in Tampa Bay (<span class="citation" data-cites="Dey2024">Dey et al. (<a href="#ref-Dey2024" role="doc-biblioref">2024</a>)</span>). In another hydrological study, RF was able to reproduce the characteristics of the studied flood events and represented the daily flood discharge well in comparison with the hydromad modeling (<span class="citation" data-cites="Schoppa2020RFDischarge">Schoppa, Disse, and Bachmair (<a href="#ref-Schoppa2020RFDischarge" role="doc-biblioref">2020</a>)</span>). As research progresses, it is noted that identifying key driving factors and validating them via machine learning is a key driver in precision flood prediction (<span class="citation" data-cites="Tan2024FlashFloodDrivers">Tan et al. (<a href="#ref-Tan2024FlashFloodDrivers" role="doc-biblioref">2024</a>)</span>).</p>
 <p>Northwest Florida, often referred to as the Florida Panhandle, is home to 16 counties: Escambia, Santa Rosa, Okaloosa, Walton, Holmes, Washington, Bay, Jackson, Calhoun, Gulf, Liberty, Franklin, Gadsden, Leon, Wakulla, and Jefferson. Since January 1996, these counties have had 1,052 floods, 790 of which were flash floods and 262 non-flash floods. Flooding has resulted in approximately $656 million in property damage throughout the counties, with Escambia County ranking number one in damage with approximately $152 million since 1996 (<span class="citation" data-cites="NOAAStormEvents">National Oceanic and Atmospheric Administration (<a href="#ref-NOAAStormEvents" role="doc-biblioref">2024</a>)</span>). This study will be utilizing RF to predict flood severity in Northwest Florida based on an index created using the number of injuries, number of deaths, time of flooding event, type of flood (flash and non-flash), and property damage. This type of RF modeling has not been used at a county level in Northwest Florida and most flooding research is focused on coastal flooding due to the counties being in major hurricane paths. This is important because floods are not uniform for every county and mitigation planning is an important part of preparing for natural hazards.</p>
 </section>
-<section id="data-source" class="level2">
-<h2 class="anchored" data-anchor-id="data-source">Data Source</h2>
+<section id="data-and-visualization" class="level2">
+<h2 class="anchored" data-anchor-id="data-and-visualization">Data and Visualization</h2>
+<p>Data source: https://www.ncei.noaa.gov/stormevents/</p>
+<p>In this section, our project focuses on the Random Forest Regression Analysis of flood severity predictability, utilizing the National Oceanic and Atmospheric Administration (NOAA) storm events data set. Variables in the NOAA storm events data set that will be used in this study are listed in Table 1. This data set can be split into 70/30 training and testing to evaluate the model’s accuracy. To do this we will create a severity index (Table 2) based off of the variables in table one for the 70% split that will be used for training. For the 30% split the raw data for the same variables will be used to check the accuracy of Random forest’s ability to predict the flood severity index. The severity index will be used to classify the flood event as low (0-1), medium (2-4), or high (5-7).</p>
 <div class="cell">
 <style type="text/css">
 caption {
@@ -3172,27 +3174,23 @@ font-weight: bold;
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>Variable <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;EVENT_TYPE&quot;</span>,</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;BEGIN_DATE_TIME&quot;</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;END_DATE_TIME&quot;</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;CZ_NAME&quot;</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;DAMAGE_PROPERTY&quot;</span>,</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;INJURIES_DIRECT&quot;</span>,</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;DEATHS_DIRECT&quot;</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>Definition <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Type of severe weather event (e.g., Flood, Flash Flood).&quot;</span>,</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Date and time when the event began.&quot;</span>,</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Date and time when the event ended.&quot;</span>,</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Name of the county or zone where the event occurred.&quot;</span>,</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Estimated property damage caused by the event in U.S. dollars.&quot;</span>,</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Number of direct injuries attributed to the event.&quot;</span>,</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Number of direct fatalities attributed to the event.&quot;</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;DAMAGE_PROPERTY&quot;</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;INJURIES_DIRECT&quot;</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;DEATHS_DIRECT&quot;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>Definition <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Type of severe weather event (e.g., Flood, Flash Flood).&quot;</span>,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Date and time when the event began.&quot;</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Estimated property damage caused by the event in U.S. dollars.&quot;</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Number of direct injuries attributed to the event.&quot;</span>,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Number of direct fatalities attributed to the event.&quot;</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine vectors into a data frame</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>NOAA_Variables <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(Variable, Definition)</span>
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine vectors into a data frame</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>NOAA_Variables <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(Variable, Definition)</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(NOAA_Variables, <span class="at">caption =</span> <span class="st">&quot;Table 1: NOAA Storm Events Data Dictionary (Variables Used)&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(NOAA_Variables, <span class="at">caption =</span> <span class="st">&quot;Table 1: NOAA Storm Events Data Dictionary (Variables Used)&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -3217,14 +3215,6 @@ font-weight: bold;
 <td style="text-align: left;">Date and time when the event began.</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">END_DATE_TIME</td>
-<td style="text-align: left;">Date and time when the event ended.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">CZ_NAME</td>
-<td style="text-align: left;">Name of the county or zone where the event occurred.</td>
-</tr>
-<tr class="odd">
 <td style="text-align: left;">DAMAGE_PROPERTY</td>
 <td style="text-align: left;">Estimated property damage caused by the event in U.S. dollars.</td>
 </tr>
@@ -3235,6 +3225,100 @@ font-weight: bold;
 <tr class="odd">
 <td style="text-align: left;">DEATHS_DIRECT</td>
 <td style="text-align: left;">Number of direct fatalities attributed to the event.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Classifier <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Flood&quot;</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Flash Flood&quot;</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Daylight&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Dusk and Dawn&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Nighttime&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;No Deaths or Injuries&quot;</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Injuries (no deaths)&quot;</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Deaths&quot;</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Property and Crop Damage &lt; $100,000&quot;</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Property and Crop Damage $100,000 - $500,000&quot;</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;Property and Crop Damage &gt; $500,000&quot;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>Value <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;0&quot;</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;1&quot;</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;0&quot;</span>,</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;1&quot;</span>,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;2&quot;</span>,</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;0&quot;</span>,</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;1&quot;</span>,</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;2&quot;</span>,</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;0&quot;</span>,</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;1&quot;</span>,</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;2&quot;</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine vectors into a data frame</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>NOAA_Class <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(Classifier, Value)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(NOAA_Class, <span class="at">caption =</span> <span class="st">&quot;Table 2: Flood Severity Index&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Table 2: Flood Severity Index</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Classifier</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Flood</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Flash Flood</td>
+<td style="text-align: left;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Daylight</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dusk and Dawn</td>
+<td style="text-align: left;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Nighttime</td>
+<td style="text-align: left;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">No Deaths or Injuries</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Injuries (no deaths)</td>
+<td style="text-align: left;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Deaths</td>
+<td style="text-align: left;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Property and Crop Damage &lt; $100,000</td>
+<td style="text-align: left;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Property and Crop Damage $100,000 - $500,000</td>
+<td style="text-align: left;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Property and Crop Damage &gt; $500,000</td>
+<td style="text-align: left;">2</td>
 </tr>
 </tbody>
 </table>
