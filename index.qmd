@@ -5,6 +5,7 @@ date: last-modified
 format:
   html:
     code-fold: true
+    fig-cap-location: top
 course: Capstone Projects in Data Science
 bibliography: references.bib # file contains bibtex for references
 #always_allow_html: true # this allows to get PDF with HTML features
@@ -36,15 +37,18 @@ Northwest Florida, often referred to as the Florida Panhandle, is home to 16 cou
 
 Data source: https://www.ncei.noaa.gov/stormevents/
 
-In this section, our project focuses on the Random Forest Regression Analysis of flood severity predictability, utilizing the National Oceanic and Atmospheric Administration (NOAA) storm events data set. Variables in the NOAA storm events data set that will be used in this study are listed in Table 1. This data set can be split into 70/30 training and testing to evaluate the model’s accuracy. To do this we will create a severity index (Table 2) based off of the variables in table one for the 70% split that will be used for training. For the 30% split the raw data for the same variables will be used to check the accuracy of Random forest's ability to predict the flood severity index. The severity index will be used to classify the flood event as low (0-1), medium (2-4), or high (5-7).
+In this section, our project focuses on the Random Forest Regression Analysis of flood severity predictability, utilizing the National Oceanic and Atmospheric Administration (NOAA) storm events data set. Variables in the NOAA storm events data set that will be used in this study are listed in Table 1. This data set can be split into 70/30 training and testing to evaluate the model’s accuracy. To do this we will create a severity index (Table 2) based off of the variables in table one for the 70% split that will be used for training. For the 30% split the raw data for the same variables will be used to check the accuracy of Random forest's ability to predict the flood severity index. The severity index, ranging 0 to 7, will be used as a continuous outcome variable in the regression model.
 
 
-
-```{css, echo=FALSE}
+```{=html}
+<style>
+.figure-caption,
+figcaption,
 caption {
   font-size: 24px !important;
-  font-weight: bold;
+  font-weight: bold !important;
 }
+</style>
 ```
 
 ```{r}
@@ -114,5 +118,38 @@ NOAA_Class <- data.frame(Classifier, Value)
 kable(NOAA_Class, caption = "Table 2: Flood Severity Index")
 
 ```
+## Methods
 
+Random Forest is a supervised machine learning algorithm that introduces two sources of randomness during training. First, it uses bootstrap sampling of the training data, meaning data points are randomly selected with replacement so that the same data point may appear multiple times in a tree’s training sample, while others may not appear at all. Second, at each split within a tree, a random subset of predictor variables is considered when determining the best split. A tree continues to split until further splitting stops improving prediction or a preset depth limit is reached (@Dutta2023COVIDML).
+
+In Random Forest a tree will start at a root node containing all sampled data points. Then it chooses a variable to split the data (i.e. flood versus flash flood) then splits all sampled data points by that criteria. The tree creates splits on either side of the original split and then reorganizes the data points based on that criteria, as seen in Figure 1 (@Rigatti2017RandomForest). The severity index score for each storm and the tree’s goal is to continue splitting and to determine what variables and what splits best determine the same severity index.
+
+```{r, fig.cap="Figure 1: General Representation of a Decision Tree", echo=FALSE}
+knitr::include_graphics("DecisionTree.png")
+```
+### *Formula*
+
+Mean square error is used in random forest regression to determine the optimal splits during training and evaluate the model performance. The lower mean square error that is determined, the greater the model accuracy. The squared difference between actual and predicted values is squared (yᵢ − ŷᵢ)². 1 over the number of observations averages the total squared error. The E symbol represents the summation of the observed data points (@hodson2021mean). 
+
+![](MSE.png){fig-align="left"}
+
+### Assumptions
+
+* Each tree makes its own decisions.
+* Data points are chosen randomly to reduce mistakes.
+* Sufficient data ensures the trees have unique patterns and variety.
+* Combining the predictions from different trees leads to a more accurate final result.
+
+### Advantages
+
+* Easy to identify importance of features
+* Multiple decision trees tend to cause little risk of overfitting (not too close to original training data)
+* Very accurate due to multiple subgroups
+* Less need for data management (pre-processing to perform random forest)
+
+### Limitations
+
+* Slower to acquire observations for best decision making
+* Bound by the lowest and highest observations (no extrapolate)
+* Difficult to interpret the decisions of ‘best features’ seen with trees
 
