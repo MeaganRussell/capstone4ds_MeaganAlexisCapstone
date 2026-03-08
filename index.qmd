@@ -1,11 +1,28 @@
 ---
-title: "Predicting Flood Severity of Northwest Florida Counties using Random Forest Regression Modeling - Spring 2026 "
-author: "Meagan Russell (Advisor: Dr. Cohen)"
+title: "Predicting Flood Damage of Northwest Florida Counties using Random Forest Regression Modeling - Spring 2026 "
+author: "Meagan Russell and Alexis Bjornstad (Advisor: Dr. Cohen)"
 date: last-modified
-format:
+format: 
   html:
     code-fold: true
     fig-cap-location: top
+    include-in-header:
+      text: |
+        <style>
+        /* Forces Figures and Tables to match exactly */
+        figcaption,tab_header, title, name, caption, .caption-prefix, .caption-number, .quarto-xref {
+          font-family: -apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+          font-weight: bold !important;
+          font-style: normal !important;
+          color: #000000 !important;
+        }
+        </style>
+crossref:
+  fig-title: "**Figure**"
+  tbl-title: "**Table**"
+  fig-prefix: "**Figure**"
+  tbl-prefix: "**Table**"
+  title-delim: "**.**"
 course: Capstone Projects in Data Science
 bibliography: references.bib # file contains bibtex for references
 #always_allow_html: true # this allows to get PDF with HTML features
@@ -25,136 +42,231 @@ Slides: [slides.html](slides.html){target="_blank"} ( Go to `slides.qmd`
 to edit)
 -->
 
+<style>
+.figure-caption {
+  text-align: center !important;
+  font-size: 1.1em;
+  font-weight: 500;
+}
+
+.gt_heading {
+  text-align: center !important;
+}
+
+.gt_title {
+  text-align: center !important;
+  font-size: 1.1em !important;
+  font-weight: 500 !important;
+}
+</style>
+
 ## Introduction
 
 Flooding is caused by many mechanisms, including when heavy rainfall causes rivers to overflow, when impervious surfaces reduce water infiltration, and/or when soil becomes oversaturated (@Javadinejad2022; @Lecce2000FloodTiming). Flash floods are considered to be one of the most severe natural disasters due to their rapid onset, unpredictability, infrastructure damage, and associated fatalities (@Diakakis2020; @Sadkou2024FlashFloods). Infrastructure and agricultural damage costs have steadily increased in the twentieth century (@Saharia2017). According to the IPCC, the severity and frequency of flood-causing severe storms will likely increase due to climate change (@IPCC2021Chapter11; @Halsnaes2023FloodModels). Due to Northwest Florida’s location relative to the Gulf of Mexico and major hurricane paths, most flooding research has focused on sea-level rise and coastal flooding, leaving inland flood risk understudied (@Bilskie2014Dynamics; @Morss2024Storm). Floods are extremely important to keep track of as they prove to contribute to human deaths, property damage, ecosystem changes, and social-economic losses (@Chen2020FloodSusceptibility). Growing evidence of machine learning models' capabilities to accurately predict storm severity and susceptibility highlights a major opportunity to apply these models to Northwest Florida (@Gensini2021SevereML; @Akshay2021FloodSeverity; @Chen2022RandomForestGeo).
 
 Random Forest (RF) is a type of machine learning algorithm that predicts the dependent variable based on independent variables (@Salman2024RandomForest). RF is a smart model that uses simple models, aka decision trees (@Salman2024RandomForest). Errors produced by the random forest training can be counteracted by increasing the number of samples and trees of classification (@Wang2015FloodRF). Additionally, each decision tree’s selection of data is random, which prevents the model from memorizing the data (@Salman2024RandomForest). The RF application allowed for the importance of each variable to be assessed, and each index contribution to the overall risk was calculated pertaining to the relevant study of interest in China (@Wang2015FloodRF). The RF technique is optimal for performing hydrological studies due to the ability of the machine learning model to map flood risk analysis for hazard assessment with a low-cost application of the non-traditional model compared to rainfall-runoff models (@Zhu2022FloodRF). For instance,  a machine learning study in 2024 using 16 flood risk factors (FRFs), including historic flood damage locations, found that several high and very high flood risk areas closely overlapped with FEMA’s 100-year floodplain in Tampa Bay (@Dey2024). In another hydrological study, RF was able to reproduce the characteristics of the studied flood events and represented the daily flood discharge well in comparison with the hydromad modeling (@Schoppa2020RFDischarge). As research progresses, it is noted that identifying key driving factors and validating them via machine learning is a key driver in precision flood prediction (@Tan2024FlashFloodDrivers).
 
-Northwest Florida, often referred to as the Florida Panhandle, is home to 16 counties: Escambia, Santa Rosa, Okaloosa, Walton, Holmes, Washington, Bay, Jackson, Calhoun, Gulf, Liberty, Franklin, Gadsden, Leon, Wakulla, and Jefferson. Since January 1996, these counties have had 1,052 floods, 790 of which were flash floods and 262 non-flash floods. Flooding has resulted in approximately $656 million in property damage throughout the counties, with Escambia County ranking number one in damage with approximately $152 million since 1996 (@NOAAStormEvents). This study will be utilizing RF to predict flood severity in Northwest Florida based on an index created using the number of injuries, number of deaths, time of flooding event, type of flood (flash and non-flash), and property damage. This type of RF modeling has not been used at a county level in Northwest Florida and most flooding research is focused on coastal flooding due to the counties being in major hurricane paths. This is important because floods are not uniform for every county and mitigation planning is an important part of preparing for natural hazards. 
+Northwest Florida, often referred to as the Florida Panhandle, is home to 16 counties: Escambia, Santa Rosa, Okaloosa, Walton, Holmes, Washington, Bay, Jackson, Calhoun, Gulf, Liberty, Franklin, Gadsden, Leon, Wakulla, and Jefferson. Since January 1996, these counties have had 1,052 floods, 790 of which were flash floods and 262 non-flash floods. Flooding has resulted in approximately $656 million in property damage throughout the counties, with Escambia County ranking number one in damage with approximately $152 million since 1996 (@NOAAStormEvents). This study will be utilizing RF to predict flood damage in Northwest Florida based on housing units, population, median home value, flood type (flash flood vs. flood), precipitation (1-day, 3-day, and 7-day cumulative amounts), and county. This type of RF modeling has not been used at a county level in Northwest Florida and most flooding research is focused on coastal flooding due to the counties being in major hurricane paths. This is important because floods are not uniform for every county and mitigation planning is an important part of preparing for natural hazards. 
 
-## Data and Visualization
+## Methods
 
-Data source: https://www.ncei.noaa.gov/stormevents/
+Random Forest is a supervised machine learning algorithm that introduces two sources of randomness during training. First, it uses bootstrap sampling of the training data, meaning data points are randomly selected with replacement so that the same data point may appear multiple times in a tree’s training sample, while others may not appear at all. Second, at each split within a tree, a random subset of predictor variables is considered when determining the best split. A tree continues to split until further splitting stops improving prediction or a preset depth limit is reached (@Dutta2023COVIDML).
 
-In this section, our project focuses on the Random Forest Regression Analysis of flood severity predictability, utilizing the National Oceanic and Atmospheric Administration (NOAA) storm events data set. Variables in the NOAA storm events data set that will be used in this study are listed in Table 1. This data set can be split into 70/30 training and testing to evaluate the model’s accuracy. To do this we will create a severity index (Table 2) based off of the variables in table one for the 70% split that will be used for training. For the 30% split the raw data for the same variables will be used to check the accuracy of Random forest's ability to predict the flood severity index. The severity index, ranging 0 to 7, will be used as a continuous outcome variable in the regression model.
+In Random Forest a tree will start at a root node containing all sampled data points. Then it chooses a variable to split the data (i.e. flood versus flash flood) then splits all sampled data points by that criteria. The tree creates splits on either side of the original split and then reorganizes the data points based on that criteria, as seen in Figure 1 (@Rigatti2017RandomForest). The severity index score for each storm and the tree’s goal is to continue splitting and to determine what variables and what splits best determine the same severity index.
 
+```{dot}
+//| label: fig-random-forest
+//| fig-cap: "Conceptual representation of the random forest algorithm"
+//| fig-width: 8
+//| out-width: 100%
+digraph random_forest_example {
+  graph [layout = dot, rankdir = TB, compound = true]
+  node [shape = box, style = filled, fillcolor = chartreuse3, fontname = Helvetica]
+  
+  final [shape = ellipse, label = "Final Prediction\n(Average of Trees)"]
 
-```{=html}
-<style>
-.figure-caption,
-figcaption,
-caption {
-  font-size: 24px !important;
-  font-weight: bold !important;
+  subgraph cluster_1 {
+    label = "Tree 1"
+    t1a [label = "Rainfall > 3 in?"]
+    t1d [label = "High Damage"]
+    t1e [label = "Low Damage"]
+    t1a -> t1d [label = "Yes"]
+    t1a -> t1e [label = "No"]
+  }
+  
+  subgraph cluster_2 {
+    label = "Tree 2"
+    t2a [label = "Flood Type = Flash Flood?"]
+    t2d [label = "High Damage"]
+    t2e [label = "Moderate Damage"]
+    t2a -> t2d [label = "Yes"]
+    t2a -> t2e [label = "No"]
+  }
+
+  subgraph cluster_3 {
+    label = "Tree 3"
+    t3a [label = "Housing Units > 50,000?"]
+    t3d [label = "Moderate Damage"]
+    t3e [label = "Low Damage"]
+    t3a -> t3d [label = "Yes"]
+    t3a -> t3e [label = "No"]
+  }
+
+  t1d -> final
+  t1e -> final
+  t2d -> final
+  t2e -> final
+  t3d -> final
+  t3e -> final
 }
-</style>
 ```
+Random forest is a flexible, buildable, and straightforward machine learning method. Random forest produces hundreds of decision trees and binary splitting to determine the best split per possible variable. Each tree is trained with a random parameter, and the splitting function is used for the selection of the more fitting observable variable. Random forest can handle different feature types of binary, categorical, and numeric data for the use of classification, clustering, and/or regression analysis. The random forest method ensembles powerful extractions and applications of information with decision trees utilized in its model structure (@Speiser2019RandomForest).
 
-```{r}
+Random forest regression analysis is capable of handling large datasets and computing the variable importance of each data component. Random forest is capable of handling highly dimensional data as it produces regression trees with binary splits for outcome predictions. Random forest applies to the flood damage prediction method as it determines the model’s accuracy for optimal predictors of the dataset based on variable selection and statistical characteristics. The three datasets chosen for our prediction analysis require decision-making to develop the outcome of interest of flood damage prediction (@Haddouchi2019RandomForest).
+
+### Formula
+
+Mean square error is used in random forest regression to determine the optimal splits during training and evaluate the model performance. The lower mean square error that is determined, the greater the model accuracy. The squared difference between actual and predicted values is squared (yᵢ − ŷᵢ)². 1 over the number of observations averages the total squared error. The summation symbol Σ represents the summation of the observed data points (@hodson2021mean).
+
+$$
+MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
+$$
+
+### Assumptions
+
+* Each tree makes its own decisions.
+* Data points are chosen randomly to reduce mistakes.
+* Sufficient data ensures the trees have unique patterns and variety.
+* Combining the predictions from different trees leads to a more accurate final result.
+
+### Advantages
+
+* Easy to identify importance of features
+* Multiple decision trees tend to cause little risk of overfitting (not too close to original training data)
+* Very accurate due to multiple subgroups
+* Less need for data management (pre-processing to perform random forest)
+
+### Limitations
+
+* Slower to acquire observations for best decision making
+* Bound by the lowest and highest observations (no extrapolate)
+* Difficult to interpret the decisions of ‘best features’ seen with trees## Data and Visualization
+
+## Analysis and Results
+
+### Data Discussion: 
+
+Data collected for this project utilizes the [NOAA Storm Events Database](https://www.ncdc.noaa.gov/stormevents/); daily precipitation observations from the [Global Historical Climatology Network Daily (GHCN-Daily)](https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily); total population, total housing units, and median home value from the [American Community Survey 5-year estimates](https://data.census.gov/). Variables in the NOAA storm events data set that will be used in this study are listed in Table 1. 
 
 
-# Creae vectors for each column of my table
-
+```{r, fig.align="center"}
 library(gt)
-library(tibble)
-library(dbplyr)
-library(knitr)
-
-
-Variable <- c(
-    "EVENT_TYPE",
-    "BEGIN_DATE_TIME",
-    "DAMAGE_PROPERTY",
-    "INJURIES_DIRECT",
-    "DEATHS_DIRECT"
-  )
-Definition <- c(
-    "Type of severe weather event (e.g., Flood, Flash Flood).",
-    "Date and time when the event began.",
-    "Estimated property damage caused by the event in U.S. dollars.",
-    "Number of direct injuries attributed to the event.",
-    "Number of direct fatalities attributed to the event."
-  )
-
-# Combine vectors into a data frame
-
-NOAA_Variables <- data.frame(Variable, Definition)
-
-kable(NOAA_Variables, caption = "Table 1: NOAA Storm Events Data Dictionary (Variables Used)")
-```
-```{r}
-Classifier <- c(
-    "Flood",
-    "Flash Flood",
-    "Daylight",
-    "Dusk and Dawn",
-    "Nighttime",
-    "No Deaths or Injuries",
-    "Injuries (no deaths)",
-    "Deaths",
-    "Property and Crop Damage < $100,000",
-    "Property and Crop Damage $100,000 - $500,000",
-    "Property and Crop Damage > $500,000"
-  )
-Value <- c(
-    "0",
-    "1",
-    "0",
-    "1",
-    "2",
-    "0",
-    "1",
-    "2",
-    "0",
-    "1",
-    "2"
-  )
-
-# Combine vectors into a data frame
-
-NOAA_Class <- data.frame(Classifier, Value)
-
-kable(NOAA_Class, caption = "Table 2: Flood Severity Index")
-
-```
-```{r}
-
 library(dplyr)
 
-stormall <- read_csv("StormEvents_NWFL.csv", show_col_types = FALSE)
+variable_table <- tibble::tibble(
+  Variable = c(
+    "County",
+    "Date",
+    "Flood Type",
+    "Property Damage",
+    "Rainfall (1-day)",
+    "Rainfall (3-day)",
+    "Rainfall (7-day)",
+    "Population",
+    "Housing Units",
+    "Median Home Value"
+  ),
+  
+  Description = c(
+    "County where the storm event occurred",
+    "Date of the storm event",
+    "Classification of event (Flood or Flash Flood)",
+    "Estimated property damage caused by the storm",
+    "Total precipitation during the storm day",
+    "Total precipitation during storm day and previous two days",
+    "Total precipitation during storm day and previous six days",
+    "Total county population",
+    "Total number of housing units in the county",
+    "Median value of owner-occupied housing units"
+  ),
+  
+  Unit = c(
+    "County name",
+    "Date",
+    "Category",
+    "USD ($)",
+    "Inches",
+    "Inches",
+    "Inches",
+    "Persons",
+    "Count",
+    "USD ($)"
+  ),
+  
+  Source = c(
+    "NOAA Storm Events Database",
+    "NOAA Storm Events Database",
+    "NOAA Storm Events Database",
+    "NOAA Storm Events Database",
+    "NOAA GHCN-Daily",
+    "NOAA GHCN-Daily",
+    "NOAA GHCN-Daily",
+    "U.S. Census Bureau ACS",
+    "U.S. Census Bureau ACS",
+    "U.S. Census Bureau ACS"
+  )
+)
 
+variable_table %>%
+  gt() %>%
+  tab_header(
+    title = "Table 1: Variables Used in Random Forest Model"
+  ) %>%
+  opt_align_table_header(align = "center")
+
+
+```
+Floods are categorized as Flash Flood or Flood. In Northwest Florida there have been 1023 flood events, Figure 2. 
+
+```{r, fig.align="center"}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+
+stormall <- read_csv("StormEvents_NWFL.csv", show_col_types = FALSE) %>%
+  mutate(BEGIN_DATE_TIME = mdy(BEGIN_DATE)) %>%
+  filter(BEGIN_DATE_TIME >= as.Date("2000-01-01"))
+
+# Count flood types
 flood_counts <- stormall %>%
-  count(EVENT_TYPE)
-
-flood_counts
-
-flood_counts <- flood_counts %>%
+  count(EVENT_TYPE) %>%
   mutate(
     percent = n / sum(n) * 100
   )
-
-library(ggplot2)
 
 ggplot(flood_counts, aes(x = "", y = percent, fill = EVENT_TYPE)) +
   geom_col(width = 1, color = "white") +
   coord_polar(theta = "y") +
   geom_text(
-    aes(label = paste0(round(percent,1), "%")),
+    aes(label = paste0(round(percent,1), "%\n(", n, ")")),
     position = position_stack(vjust = 0.5),
     color = "white",
     size = 6
   ) +
   labs(
-    title = "Flash Flood vs Flood Events",
+    title = "Figure 2: Flash Flood vs Flood Events (2000–Present)",
     fill = "Event Type"
   ) +
   scale_fill_manual(values = c("Flash Flood" = "blue2", "Flood" = "chartreuse3")) +
   theme_void()
 ```
-```{r}
+To further visual the number of floods in Northwest Florida, we broke down the type of flood per county in Figure 2. 
+
+```{r, fig.align="center"}
 library(dplyr)
 library(ggplot2)
+library(suncalc)
 library(lubridate)
 
 stormall %>%
@@ -163,7 +275,7 @@ stormall %>%
   geom_col(position = "dodge") +
   scale_fill_manual(values = c("Flood" = "blue2", "Flash Flood" = "chartreuse3")) +
   labs(
-    title = "Flood and Flash Flood Events by County",
+    title = "Figure 3: Flood and Flash Flood Events by County",
     x = "County",
     y = "Number of Events",
     fill = "Event Type"
@@ -173,42 +285,10 @@ stormall %>%
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
 ```
-<!-- Use this if we want to see damage for each county. They are small images though.
-library(dplyr)
-library(ggplot2)
-library(lubridate)
 
-damage_year <- storm %>%
-  mutate(
-    DAMAGE_PROPERTY_NUM = as.numeric(DAMAGE_PROPERTY_NUM),
-    year = year(mdy(BEGIN_DATE))
-  ) %>%
-  group_by(CZ_NAME_STR, year) %>%
-  summarise(
-    total_damage = sum(DAMAGE_PROPERTY_NUM, na.rm = TRUE),
-    .groups = "drop"
-  )
+In Figure 3 b the number of flooding events from January 1, 2020 to December 31, 2025, for the 16 counties in Northwest Florida are shown. On the center y-axis damage in millions is shown and on the center y-axis the number of flood events is shown. The orange trend line tells us that the number of flood events is increasing and the red trend line shows us that the total property damage is increasing as well.
 
-counties <- unique(damage_year$CZ_NAME_STR)
-
-for (cty in counties) {
-  p <- damage_year %>%
-    filter(CZ_NAME_STR == cty) %>%
-    ggplot(aes(x = year, y = total_damage / 1000000)) +
-    geom_line(color = "blue2", linewidth = 1) +
-    geom_smooth(method = "lm", se = FALSE, color = "red", linewidth = 1) +
-    labs(
-      title = paste("Property Damage Trend:", cty),
-      x = "Year",
-      y = "Total Property Damage (Millions of $)"
-    ) +
-    theme_minimal(base_size = 16)
-  
-  print(p)
-}
--->
-
-```{r, fig.width=12, fig.height=7}
+```{r, fig.align="center", fig.width=12, fig.height=7}
 library(dplyr)
 library(lubridate)
 
@@ -287,409 +367,143 @@ ggplot(yearly_data, aes(x = year)) +
   ) +
   
   labs(
-    title = "Flood Events and Property Damage Over Time",
+    title = "Figure 4: Flood Events and Property Damage Over Time",
     x = "Year"
   ) +
   
   theme_minimal(base_size = 14)
 
 ```
-```{r}
-stormall %>%
-  group_by(EVENT_TYPE) %>%
-  summarise(
-    injuries = sum(INJURIES_DIRECT, na.rm = TRUE),
-    deaths = sum(DEATHS_DIRECT, na.rm = TRUE)
-  )
-stormall %>%
-  group_by(CZ_NAME_STR) %>%
-  summarise(
-    injuries = sum(INJURIES_DIRECT, na.rm = TRUE),
-    deaths = sum(DEATHS_DIRECT, na.rm = TRUE)
-  )
-stormall %>%
-  group_by(CZ_NAME_STR) %>%
-  summarise(
-    injuries = sum(INJURIES_DIRECT, na.rm = TRUE),
-    deaths = sum(DEATHS_DIRECT, na.rm = TRUE)
-  )
-stormall %>%
-  mutate(year = year(mdy(BEGIN_DATE))) %>%
-  count(year, EVENT_TYPE)
-
+Below is table 2 with the variables from the 2024 American Community Survey - 5 Year estimates. 
+```{r, fig.align="center"}
+library(readxl)
 library(dplyr)
-library(ggplot2)
+library(gt)
 
-injury_death_data <- stormall %>%
-  group_by(EVENT_TYPE) %>%
-  summarise(
-    Injuries = sum(INJURIES_DIRECT, na.rm = TRUE),
-    Deaths = sum(DEATHS_DIRECT, na.rm = TRUE),
-    .groups = "drop"
-  )
-library(tidyr)
+census_data <- read_excel("CensusData_NWFL.xlsx")
 
-injury_death_long <- injury_death_data %>%
-  pivot_longer(
-    cols = c(Injuries, Deaths),
-    names_to = "Impact_Type",
-    values_to = "Count"
+census_data <- census_data %>%
+  rename(
+    Population = `Total Total Populatin`,
+    MedianHomeValue = `Median value (dollars)`,
+    HousingUnits = `Housing Units`
   )
-ggplot(injury_death_long, aes(x = EVENT_TYPE, y = Count, fill = Impact_Type)) +
-  geom_col(position = "dodge") +
-  scale_fill_manual(values = c("Injuries" = "blue3", "Deaths" = "chartreuse3")) +
-  labs(
-    title = "Injuries and Deaths by Flood Type",
-    x = "Flood Type",
-    y = "Number of People",
-    fill = "Impact"
-  ) +
-  theme_minimal(base_size = 16)
+
+census_data %>%
+  select(County, Population, HousingUnits, MedianHomeValue) %>%
+  arrange(desc(Population)) %>%
+  gt() %>%
+  tab_header(
+    title = "Table 2: Population, Housing Units, and Median Home Value by County",
+    subtitle = "Northwest Florida Counties (ACS 5-Year Estimates - 2024)"
+  ) %>%
+  cols_label(
+    County = "County",
+    Population = "Population",
+    HousingUnits = "Housing Units",
+    MedianHomeValue = "Median Home Value ($)"
+  ) %>%
+  fmt_number(
+    columns = c(Population, HousingUnits),
+    decimals = 0
+  ) %>%
+  fmt_currency(
+    columns = MedianHomeValue,
+    currency = "USD",
+    decimals = 0
+  )
 ```
-<!--
 
-Starting here, I'm going to just look at the last six years of data, starting from 01-01, or I guess, okay, starting from January 1st, 2020 and ending on December 31st, 2025. Period. The reason we are narrowing the search is because we're looking at property damage to see if random forests can correctly predict property damage and then also predict accurate flood type. Period. We originally started with data dating all the way back to 1996, January 1st. However, flood damage is not easily converted, or property damage isn't easily converted from 30 years ago to the actual amounts today. So instead of using data for the last 30 years to train random forests accurately predict property damage, we wanted to just use the last six years. In addition, there's a total of 1,048 total storms or flash floods and floods that were downloaded for the counties in northwest Florida. And out of those, 488 are in the last six years. So I wanted to show that a large percentage of the storms are occurring now. So the original data, I wanted to just show that the trend lines are going up. I can't only use the data for the last six years to show like the trends and why this is important, because if we just look at the last six years, it looks as if floods are decreasing, or like the frequency of floods are decreasing, but that's not true. And it's skewed because it's only six years. So I need to do a full background first, and now I'm moving into just the last six years, and that's what we're going to train random forests on.
--->
 
-```{r}
-library(dplyr)
-library(ggplot2)
-prec <- read_csv("Prec.csv", show_col_types = FALSE)
-head(prec)
+To more accurately predict flood damage amounts, data from the past six years versus the past 20 years was chosen. Using the most recent data provides us with a more accurate representation of actual damage costs due to inflation, property costs, housing unit numbers, and population. Precipitation data was collected for the past six years, Figure 4.
 
-# Assuming PREC has columns like "county" and "precipitation"
+```{r, fig.align="center"}
 
-# Group by county and sum precipitation
-prec_by_county <- prec %>%
-  group_by(County) %>%
-  summarise(total_precip = sum(PRCP, na.rm = TRUE))
+library(readr)
 
-# Create a bar chart showing total precipitation by county
-ggplot(prec_by_county, aes(x = reorder(County, -total_precip), y = total_precip)) +
+prec <- read_csv("Prec.csv")
+
+monthly_avg <- prec %>%
+  mutate(DATE = as.Date(DATE, format = "%m/%d/%Y")) %>%
+  mutate(month = format(DATE, "%Y-%m")) %>%
+  group_by(County, month) %>%
+  summarise(total_monthly_in = sum(PRCP/100, na.rm = TRUE), .groups = "drop") %>%
+  mutate(month_name = format(as.Date(paste0(month, "-01")), "%B")) %>%
+  group_by(County, month_name) %>%
+  summarise(avg_monthly_rain_in = mean(total_monthly_in, na.rm = TRUE), .groups = "drop")
+
+# Ensure month order
+monthly_avg$month_name <- factor(monthly_avg$month_name, levels = month.name)
+
+# Plot with facets
+ggplot(monthly_avg, aes(x = month_name, y = avg_monthly_rain_in)) +
   geom_col(fill = "blue3") +
+  facet_wrap(~ County, ncol=4) +
   labs(
-    title = "Total Precipitation by County (2020–2025)",
-    x = "County",
-    y = "Total Precipitation (units)"
+    title = "Figure 5: Average Monthly Rainfall by County",
+    x = "Month",
+    y = "Average Rainfall (inches)"
   ) +
-  theme_minimal() +
+  theme_minimal(base_size = 10) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
+Average flood events per month over the last six years, Figure 5.
 
-## Methods
-
-Random Forest is a supervised machine learning algorithm that introduces two sources of randomness during training. First, it uses bootstrap sampling of the training data, meaning data points are randomly selected with replacement so that the same data point may appear multiple times in a tree’s training sample, while others may not appear at all. Second, at each split within a tree, a random subset of predictor variables is considered when determining the best split. A tree continues to split until further splitting stops improving prediction or a preset depth limit is reached (@Dutta2023COVIDML).
-
-In Random Forest a tree will start at a root node containing all sampled data points. Then it chooses a variable to split the data (i.e. flood versus flash flood) then splits all sampled data points by that criteria. The tree creates splits on either side of the original split and then reorganizes the data points based on that criteria, as seen in Figure 1 (@Rigatti2017RandomForest). The severity index score for each storm and the tree’s goal is to continue splitting and to determine what variables and what splits best determine the same severity index.
-
-```{r, fig.cap="Figure 1: General Representation of a Decision Tree", echo=FALSE}
-knitr::include_graphics("DecisionTree.png")
-```
-### *Formula*
-
-Mean square error is used in random forest regression to determine the optimal splits during training and evaluate the model performance. The lower mean square error that is determined, the greater the model accuracy. The squared difference between actual and predicted values is squared (yᵢ − ŷᵢ)². 1 over the number of observations averages the total squared error. The E symbol represents the summation of the observed data points (@hodson2021mean).
-
-![](MSE.png){fig-align="left"}
-
-### Assumptions
-
-* Each tree makes its own decisions.
-* Data points are chosen randomly to reduce mistakes.
-* Sufficient data ensures the trees have unique patterns and variety.
-* Combining the predictions from different trees leads to a more accurate final result.
-
-### Advantages
-
-* Easy to identify importance of features
-* Multiple decision trees tend to cause little risk of overfitting (not too close to original training data)
-* Very accurate due to multiple subgroups
-* Less need for data management (pre-processing to perform random forest)
-
-### Limitations
-
-* Slower to acquire observations for best decision making
-* Bound by the lowest and highest observations (no extrapolate)
-* Difficult to interpret the decisions of ‘best features’ seen with trees
-
-```{r}
-install.packages(c("readr", "dplyr", "lubridate", "suncalc"))
-library(readr)
+```{r, fig.align="center"}
 library(dplyr)
+library(ggplot2)
 library(lubridate)
-library(suncalc)
 
-storm <- read_csv("StormEvents_NWFL.csv", show_col_types = FALSE)
-
-nrow(storm)
-names(storm)
-head(storm)
-View(storm)
-
-storm <- storm %>%
+monthly_floods <- stormall %>%
   mutate(
-    BEGIN_TIME = sprintf("%04d", as.integer(BEGIN_TIME)),
-    END_TIME   = sprintf("%04d", as.integer(END_TIME)),
-    
-    begin_date = mdy(BEGIN_DATE),
-    end_date   = mdy(END_DATE),
-    
-    begin_datetime = begin_date +
-      hours(as.integer(substr(BEGIN_TIME, 1, 2))) +
-      minutes(as.integer(substr(BEGIN_TIME, 3, 4))),
-    
-    end_datetime = end_date +
-      hours(as.integer(substr(END_TIME, 1, 2))) +
-      minutes(as.integer(substr(END_TIME, 3, 4)))
-  )
-
-storm %>%
-  select(CZ_NAME_STR, BEGIN_DATE, BEGIN_TIME, begin_datetime) %>%
-  head(10)
-```
-```{r}
-storm <- storm %>%
-  mutate(
-    BEGIN_TIME = ifelse(BEGIN_TIME == 0, NA, BEGIN_TIME),
-    END_TIME   = ifelse(END_TIME == 0, NA, END_TIME)
-  )
-
-storm <- read_csv("StormEvents_NWFL.csv", show_col_types = FALSE)
-
-storm <- storm %>%
-  mutate(
-    BEGIN_TIME = ifelse(BEGIN_TIME == 0, NA, BEGIN_TIME),
-    END_TIME   = ifelse(END_TIME == 0, NA, END_TIME),
-    BEGIN_TIME = ifelse(is.na(BEGIN_TIME), NA, sprintf("%04d", as.integer(BEGIN_TIME))),
-    END_TIME   = ifelse(is.na(END_TIME), NA, sprintf("%04d", as.integer(END_TIME))),
-    begin_date = mdy(BEGIN_DATE),
-    end_date   = mdy(END_DATE),
-    begin_datetime = if_else(
-      is.na(BEGIN_TIME),
-      as.POSIXct(NA),
-      as.POSIXct(begin_date) +
-        hours(as.integer(substr(BEGIN_TIME, 1, 2))) +
-        minutes(as.integer(substr(BEGIN_TIME, 3, 4)))
-    )
-  )
-
-county_lookup <- data.frame(
-  CZ_NAME_STR = c(
-    "Escambia County", "Santa Rosa County", "Okaloosa County", "Walton County",
-    "Holmes County", "Washington County", "Bay County", "Jackson County",
-    "Calhoun County", "Gulf County", "Franklin County", "Liberty County",
-    "Gadsden County", "Leon County", "Wakulla County", "Jefferson County"
-  ),
-  lat = c(
-    30.61, 30.67, 30.66, 30.62,
-    30.85, 30.50, 30.18, 30.77,
-    30.35, 29.85, 29.82, 30.22,
-    30.58, 30.46, 30.15, 30.58
-  ),
-  lon = c(
-    -87.34, -86.88, -86.58, -86.12,
-    -85.71, -85.64, -85.68, -85.23,
-    -85.19, -85.30, -84.88, -84.88,
-    -84.62, -84.28, -84.37, -83.90
-  )
-)
-
-storm <- storm %>%
-  left_join(county_lookup, by = "CZ_NAME_STR")
-
-sun_input <- storm %>%
-  distinct(CZ_NAME_STR, begin_date, lat, lon) %>%
-  filter(!is.na(begin_date), !is.na(lat), !is.na(lon)) %>%
-  rename(date = begin_date)
-
-sun_times <- getSunlightTimes(
-  data = sun_input,
-  keep = c("dawn", "sunrise", "sunset", "dusk"),
-  tz = "America/Chicago"
-)
-
-storm2 <- storm %>%
-  left_join(
-    sun_times %>% rename(begin_date = date),
-    by = c("begin_date", "lat", "lon")
+    year = year(BEGIN_DATE_TIME),
+    month = month(BEGIN_DATE_TIME, label = TRUE)
   ) %>%
-  mutate(
-    light_period = case_when(
-      is.na(begin_datetime) ~ "unknown",
-      begin_datetime >= sunrise & begin_datetime < sunset ~ "daylight",
-      (begin_datetime >= dawn & begin_datetime < sunrise) |
-        (begin_datetime >= sunset & begin_datetime < dusk) ~ "dawn_dusk",
-      TRUE ~ "night"
-    )
-  )
-View(storm2)
+  group_by(year, month) %>%
+  summarise(events = n(), .groups = "drop") %>%
+  group_by(month) %>%
+  summarise(avg_events = mean(events))
 
-
-library(dplyr)
-
-# Step 1: Classify flood severity
-storm2 <- storm2 %>%
-  mutate(
-    flood_severity = case_when(
-      EVENT_TYPE == "Flash Flood" ~ 2,
-      EVENT_TYPE == "Flood" ~ 1,
-      TRUE ~ 0
-    )
-  )
-
-# Step 2: Combine property and crop damage, then divide into terciles
-
-storm2 <- storm2 %>%
-  mutate(
-    total_damage = DAMAGE_PROPERTY_NUM + DAMAGE_CROPS_NUM,
-    damage_tercile = ntile(total_damage, 3) - 1  # ntile splits into thirds; subtract 1 to get 0/1/2
-  )
-max_damage <- max(storm2$total_damage, na.rm = TRUE)
-
-cut1 <- max_damage / 3
-cut2 <- 2 * max_damage / 3
-storm2 <- storm2 %>%
-  mutate(
-    damage_tercile = case_when(
-      total_damage <= cut1 ~ 0,
-      total_damage > cut1 & total_damage <= cut2 ~ 1,
-      total_damage > cut2 ~ 2
-    )
-  )
-
-# Step 3: Classify time-of-day
-storm2 <- storm2 %>%
-  mutate(
-    time_of_day_class = case_when(
-      light_period == "daylight" ~ 0,
-      light_period == "dawn_dusk" ~ 1,
-      light_period == "night" ~ 2
-    )
-  )
-
-# Step 4: Classify injury/death presence
-storm2 <- storm2 %>%
-  mutate(
-    injury_death_class = case_when(
-      DEATHS_DIRECT > 0 | DEATHS_INDIRECT > 0 ~ 2,
-      INJURIES_DIRECT > 0 | INJURIES_INDIRECT > 0 ~ 1,
-      TRUE ~ 0
-    )
-  )
-
-storm2 <- storm2 %>%
-  mutate(
-    flood_severity = flood_severity + damage_tercile + time_of_day_class + injury_death_class
-  )
-
-head(storm2)
-head(storm)
+ggplot(monthly_floods, aes(x = month, y = avg_events)) +
+  geom_col(fill = "blue3") +
+  labs(
+    title = "Figure 6: Average Number of Flood Events per Month",
+    x = "Month",
+    y = "Average Flood Events per Year"
+  ) +
+  theme_minimal()
 ```
-```{r}
-library(randomForest)
+
+Most intense rainfall events, figure 6. 
+```{r, fig.align="center"}
 library(dplyr)
-library(tidyr)
-
-storm <- storm %>%
-  drop_na()
-
-storm2 <- storm2 %>%
-  drop_na()
-
-storm <- storm %>%
-  left_join(
-    storm2 %>% select(EVENT_ID, flood_severity),
-    by = "EVENT_ID"
-  )
-
-colSums(is.na(storm))
-summary(storm$flood_severity)
-
 library(lubridate)
+library(ggplot2)
 
-storm <- storm %>%
+prec$DATE <- as.Date(prec$DATE)
+
+rain_intensity <- prec %>%
   mutate(
-    begin_date = mdy(BEGIN_DATE),
-    year = year(begin_date),
-    month = month(begin_date),
-    day = day(begin_date)
-  )
-head(storm,10)
-
-storm <- storm %>%
-  mutate(flood_severity = flood_severity.x) %>%
-  select(-flood_severity.x, -flood_severity.y)
-
-rf_data <- storm %>%
-  select(
-    flood_severity,
-    BEGIN_TIME,
-    year,
-    month,
-    CZ_NAME_STR,
-    EVENT_TYPE,
-    DAMAGE_PROPERTY_NUM,
-    DAMAGE_CROPS_NUM,
-    INJURIES_DIRECT,
-    DEATHS_DIRECT
+    month = month(DATE, label = TRUE)
+  ) %>%
+  group_by(month) %>%
+  summarise(
+    max_rain = max(PRCP, na.rm = TRUE),
+    .groups = "drop"
   )
 
-
-rf_data$CZ_NAME_STR <- as.factor(rf_data$CZ_NAME_STR)
-rf_data$EVENT_TYPE  <- as.factor(rf_data$EVENT_TYPE)
-rf_data$flood_severity    <- as.factor(rf_data$flood_severity)
-
-colSums(is.na(rf_data))
-```
-```{r}
-set.seed(42)
-
-train_index <- sample(seq_len(nrow(rf_data)), size = 0.7 * nrow(rf_data))
-
-train_data <- rf_data[train_index, ]
-test_data  <- rf_data[-train_index, ]
-
-rf_model <- randomForest(
-  flood_severity ~ .,
-  data = train_data,
-  ntree = 500,
-  importance = TRUE
-)
-
-print(rf_model)
-varImpPlot(rf_model)
-```
-```{r}
-rf_data2 <- storm %>%
-  select(
-    flood_severity,
-    BEGIN_TIME,
-    year,
-    month,
-    CZ_NAME_STR,
-    EVENT_TYPE
-  )
-
-rf_data2$flood_severity <- as.factor(rf_data2$flood_severity)
-rf_data2$CZ_NAME_STR <- as.factor(rf_data2$CZ_NAME_STR)
-rf_data2$EVENT_TYPE <- as.factor(rf_data2$EVENT_TYPE)
-
-set.seed(42)
-
-train_index2 <- sample(seq_len(nrow(rf_data2)), size = 0.7 * nrow(rf_data2))
-
-train_data2 <- rf_data2[train_index, ]
-test_data2  <- rf_data2[-train_index, ]
-
-rf_model2 <- randomForest(
-  flood_severity ~ .,
-  data = train_data2,
-  ntree = 500,
-  importance = TRUE
-)
-
-print(rf_model2)
-varImpPlot(rf_model2)
-
-table(storm$flood_severity)
+ggplot(rain_intensity, aes(x = month, y = max_rain)) +
+  geom_col(fill = "blue3") +
+  labs(
+    title = "Figure 7: Maximum Daily Rainfall by Month",
+    x = "Month",
+    y = "Maximum Daily Rainfall"
+  ) +
+  theme_minimal()
 ```
 
+### Random Forest 
+
+<!--
+To do this we will create a severity index (Table 2) based off of the variables in table one for the 70% split that will be used for training. For the 30% split the raw data for the same variables will be used to check the accuracy of Random forest's ability to predict the flood severity index. The severity index, ranging 0 to 7, will be used as a continuous outcome variable in the regression model.
+-->
