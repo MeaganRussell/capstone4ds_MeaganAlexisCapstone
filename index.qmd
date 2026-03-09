@@ -6,6 +6,7 @@ date: last-modified
 format: 
   html:
     code-fold: true
+    code-summary: "Show code"
     fig-cap-location: top
     include-in-header:
       text: |
@@ -73,7 +74,7 @@ Northwest Florida, often referred to as the Florida Panhandle, is home to 16 cou
 
 Random Forest is a supervised machine learning algorithm that introduces two sources of randomness during training. First, it uses bootstrap sampling of the training data, meaning data points are randomly selected with replacement so that the same data point may appear multiple times in a tree’s training sample, while others may not appear at all. Second, at each split within a tree, a random subset of predictor variables is considered when determining the best split. A tree continues to split until further splitting stops improving prediction or a preset depth limit is reached (@Dutta2023COVIDML).
 
-In Random Forest a tree will start at a root node containing all sampled data points. Then it chooses a variable to split the data (i.e. flood versus flash flood) then splits all sampled data points by that criteria. The tree creates splits on either side of the original split and then reorganizes the data points based on that criteria, as seen in @fig-random-forest (@Rigatti2017RandomForest). Each decision tree corresponds to the binary split of an explanatory variable: rainfall amount, flood type, or housing unit amount. Each decision produces an outcome determined by the algorithm to create a final prediction of flood damages using random forest for the Northwest Florida counties. 
+In Random Forest a tree will start at a root node containing all sampled data points. Then it chooses a variable to split the data (i.e. flood versus flash flood) then splits all sampled data points by that criteria. (@Rigatti2017RandomForest) The tree creates splits on either side of the original split and then reorganizes the data points based on that criteria, as seen in @fig-random-forest. Each decision tree corresponds to the binary split of an explanatory variable: rainfall amount, flood type, or housing unit amount. Each decision produces an outcome determined by the algorithm to create a final prediction of flood damages using random forest for the Northwest Florida counties. 
 
 ```{dot}
 //| label: fig-random-forest
@@ -225,7 +226,7 @@ variable_table %>%
   opt_align_table_header(align = "center")
 
 ```
-In @fig-flood-event-pie the split between Flash-Flood and Flood-categorized storm events from the year 2000 to the present is shown. The count of 1023 reported flood events represents the total number of floods reported across the 16 Northwest Florida counties starting from the year 2000. The chart shows how the majority of flood events are a part of the flash flood category.
+According to the data collected from NOAA, Northwest Florida expereienced 1023 flooding events between January 1, 2000 and December 31, 2025. Flooding event distribution is represented in @fig-flood-event-pie. Of the flooding events, 76.1% are categorized as flash floods and 23.9% are categorized as floods. This data indicates that Northwest Florida counties experience short-duration, high-intensity rainfall events more often then long-duration rainfall events.
 
 ```{r}
 #| label: fig-flood-event-pie
@@ -260,7 +261,7 @@ ggplot(flood_counts, aes(x = "", y = percent, fill = EVENT_TYPE)) +
   scale_fill_manual(values = c("Flash Flood" = "blue2", "Flood" = "chartreuse3")) +
   theme_void()
 ```
-To further visual the number of floods in Northwest Florida, we broke down the type of flood per county in @fig-flood-events-county. The bar graph represents the differences in flash-floods versus flood counts per county in Northwest Florida. The chart visualizes how the flash-flood type dominates in each county. The chart also shows the significant differences in the high versus low flood occurring counties, such as the contrast between the nearly 200 flash floods in Bay County compared to less than 25 flash flood event occurrences in Liberty County over 25 years.
+Further breaking down the dataset, @fig-flood-events-county illustrates the number of flash flood and flood events by county. Bay County experiences the highest number of flooding events, with over 150 flash floods and approximately 30 flood events recorded between January 1, 2000 and December 31, 2025. In contrast, Liberty County experienced the fewest flood events, with fewer than 25 flash floods and fewer than 10 flood events during the same time period. This pattern is likely influence by the each county's geographic profile. Bay County has 708 square miles of water while Liberty County has only 7.6 square miles of water (@ACS2024).  
 
 ```{r}
 #| label: fig-flood-events-county
@@ -288,7 +289,7 @@ stormall %>%
   )
 ```
 
-@fig-flood-damage-time depicts the occurrences of flood events and subsequent property damage over time. The number of flood events is assessed from January 1st, 2020, to December 31st, 2025. The flood events are an accumulation of floods in the study area of 16 Northwest Florida counties. On the center y-axis, the property damage in millions is shown, and on the center y-axis, the number of flood events is shown. The orange trend line tells us that the number of flood events is increasing (higher frequency). The red trend line shows us that the total property damage is slightly elevated across the 25 year timeframe. 
+As discussed in the introduction, rainfall events are forecasted to increase in frequency and intensity. The NOAA data set from NOAA supports this pattern. In @fig-flood-damage-time yearly flood event totals and total damage are plotted for yearly from January 1, 2020 to December 31, 2025. On the right y-axis, property damage in millions is represented, and on the left y-axis, the number of flood events is represented The orange trend line tells us that the number of flood events is increasing (higher frequency). The red trend line shows us that the total property damage is slightly elevated across the 25 year period. 
 
 ```{r}
 #| label: fig-flood-damage-time
@@ -363,7 +364,8 @@ ggplot(yearly_data, aes(x = year)) +
   
   theme_minimal(base_size = 14)
 ```
-@tbl-census-nwfl lists the variables from the 2024 American Community Survey, done in the 5 year estimates, from the US Census data. The table shows the population size, number of housing units, and the median home values for each of the 16 Northwest Florida counties. *To more accurately predict flood damage amounts, data from the past six years versus the past 20 years was chosen. Using the most recent data provides us with a more accurate representation of actual damage costs due to inflation, property costs, housing unit numbers, and population.
+@tbl-census-nwfl presents the demographic variable totals obatined from the [American Community Survey 5-year estimates](https://data.census.gov/). The table includes the population size, number of housing units, and the median home values for each of the 16 Northwest Florida counties from the 2024 survey.
+
 ```{r}
 #| label: tbl-census-nwfl
 #| tbl-cap: "Population, Housing Units, and Median Home Value by County"
@@ -407,32 +409,41 @@ census_data %>%
   )
 ```
 
+Accurate representation of property damage is the essential to creating an accurate and usable model. Due to inflation, property damage values from 20 years ago is not an accurate representation of present day dollars. To improve accuraces,the NOAA data utilized for the model was reduced to the past six years, starting in January 2020. The sample size in this data range was large enough for the Random Forest Model, while portraying meaningful property damage amounts. 
 
-To more accurately predict flood damage amounts, data from the past six years versus the past 20 years was chosen. Using the most recent data provides us with a more accurate representation of actual damage costs due to inflation, property costs, housing unit numbers, and population. @fig-monthly-rainfall-county is a collection of bar graphs illustraing the montlhy average rainfall per county in Northwest Florida. 
+To strengthen the model, rainfall data was collected from the [Global Historical Climatology Network Daily (GHCN-Daily)](https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily). Every county with the expection of Calhoun County, had precipitation gauges. For Calhoun County, precipitation data was collected from the four souronding counties (Bay,  Gulf, Jackson, and Libery Counties) and averaged per day. @fig-monthly-rainfall-county illustrates the monthly average rainfall per county in Northwest Florida.
 
 ```{r}
 #| label: fig-monthly-rainfall-county
 #| fig-cap: "Average Monthly Rainfall by County"
 #| fig-align: center
 
-library(readr)
+library(readxl)
 library(dplyr)
 library(ggplot2)
+library(lubridate)
 
-prec <- read_csv("Prec.csv")
+prec <- read_xlsx("Precp.xlsx")
 
 monthly_avg <- prec %>%
-  mutate(DATE = as.Date(DATE, format = "%m/%d/%Y")) %>%
-  mutate(month = format(DATE, "%Y-%m")) %>%
-  group_by(County, month) %>%
-  summarise(total_monthly_in = sum(PRCP/100, na.rm = TRUE), .groups = "drop") %>%
-  mutate(month_name = format(as.Date(paste0(month, "-01")), "%B")) %>%
-  group_by(County, month_name) %>%
-  summarise(avg_monthly_rain_in = mean(total_monthly_in, na.rm = TRUE), .groups = "drop")
+  mutate(
+    DATE = as.Date(DATE),
+    rain_in = PRCP,
+    year = year(DATE),
+    month_num = month(DATE),
+    month = month(DATE, label = TRUE, abbr = FALSE)
+  ) %>%
+  filter(!is.na(DATE), !is.na(rain_in)) %>%
+  filter(year >= 2020, year <= 2025) %>%
+  group_by(County, DATE, year, month_num, month) %>%
+  summarise(daily_rain = mean(rain_in, na.rm = TRUE), .groups = "drop") %>%
+  group_by(County, year, month_num, month) %>%
+  summarise(month_total = sum(daily_rain, na.rm = TRUE), .groups = "drop") %>%
+  group_by(County, month_num, month) %>%
+  summarise(avg_monthly_rain_in = mean(month_total, na.rm = TRUE), .groups = "drop") %>%
+  arrange(County, month_num)
 
-monthly_avg$month_name <- factor(monthly_avg$month_name, levels = month.name)
-
-ggplot(monthly_avg, aes(x = month_name, y = avg_monthly_rain_in)) +
+ggplot(monthly_avg, aes(x = month, y = avg_monthly_rain_in)) +
   geom_col(fill = "blue3") +
   facet_wrap(~ County, ncol = 4) +
   labs(
@@ -442,7 +453,8 @@ ggplot(monthly_avg, aes(x = month_name, y = avg_monthly_rain_in)) +
   theme_minimal(base_size = 10) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
-@fig-monthly-flood-events, flood events were analyzed per month for all 16 counties. The graph tells us that even though July has the highest amount of rainfall, as seen in Figure 5, September actually has a higher number of flood events. 
+As shown in @fig-monthly-rainfall-county, rainfall amounts are highest during the summer months. However, @fig-monthly-flood-events indicates that flood events occur more frequently in September and April.
+
 ```{r}
 #| label: fig-monthly-flood-events
 #| fig-cap: "Average Number of Flood Events per Month"
@@ -455,7 +467,7 @@ library(lubridate)
 monthly_floods <- stormall %>%
   mutate(
     year = year(BEGIN_DATE_TIME),
-    month = month(BEGIN_DATE_TIME, label = TRUE)
+    month = month(BEGIN_DATE_TIME, label = TRUE, abbr = FALSE)
   ) %>%
   group_by(year, month) %>%
   summarise(events = n(), .groups = "drop") %>%
@@ -468,28 +480,28 @@ ggplot(monthly_floods, aes(x = month, y = avg_events)) +
     x = "Month",
     y = "Average Flood Events per Year"
   ) +
-  theme_minimal()
+  theme_minimal()+
+   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
-
-To verify the data, rainfall @fig-max-daily-rainfall
+In order to verify this theory, rainfall daily maximums were calcualted per month (@fig-max-daily-rainfall). This figures shows that rainfall daily maximums are highest in September, suggesting that September experiences high-intesntiy but less frequent rainfall events which may contribute to more frequent flooding events. 
 ```{r}
 #| label: fig-max-daily-rainfall
 #| fig-cap: "Maximum Daily Rainfall by Month"
 #| fig-align: center
 
+library(readr)
 library(dplyr)
 library(lubridate)
 library(ggplot2)
 
-prec$DATE <- as.Date(prec$DATE)
-
 rain_intensity <- prec %>%
+  filter(!is.na(DATE), !is.na(PRCP)) %>%
   mutate(
-    month = month(DATE, label = TRUE)
+    month = month(DATE, label = TRUE, abbr = FALSE)
   ) %>%
   group_by(month) %>%
   summarise(
-    max_rain = max(PRCP, na.rm = TRUE),
+    max_rain = max(PRCP),
     .groups = "drop"
   )
 
@@ -497,9 +509,10 @@ ggplot(rain_intensity, aes(x = month, y = max_rain)) +
   geom_col(fill = "blue3") +
   labs(
     x = "Month",
-    y = "Maximum Daily Rainfall"
+    y = "Maximum Daily Rainfall (inches)"
   ) +
-  theme_minimal()
+  theme_minimal()+
+   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 ### Random Forest 
