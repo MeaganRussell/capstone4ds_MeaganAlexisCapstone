@@ -1,7 +1,8 @@
 ---
-title: "Predicting Flood Damage of Northwest Florida Counties using Random Forest Regression Modeling - Spring 2026 "
+title: "Predicting Flood Damage of Northwest Florida Counties using Random Forest Regression Modeling - Spring 2026"
 author: "Meagan Russell and Alexis Bjornstad (Advisor: Dr. Cohen)"
 date: last-modified
+
 format: 
   html:
     code-fold: true
@@ -9,27 +10,45 @@ format:
     include-in-header:
       text: |
         <style>
-        /* Forces Figures and Tables to match exactly */
-        figcaption,tab_header, title, name, caption, .caption-prefix, .caption-number, .quarto-xref {
-          font-family: -apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
-          font-weight: bold !important;
-          font-style: normal !important;
-          color: #000000 !important;
+        figcaption {
+          text-align: center;
+          font-size: 1em;
+          font-weight: normal;
+          font-family: -apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .gt_title {
+          text-align: center;
+          font-size: 1em !important;
+          font-weight: normal !important;
+        }
+
+        .gt_subtitle {
+          text-align: center;
+          font-size: 0.95em;
+          font-weight: normal;
+        }
+
+        .gt_heading {
+          text-align: center;
         }
         </style>
+
 crossref:
-  fig-title: "**Figure**"
-  tbl-title: "**Table**"
-  fig-prefix: "**Figure**"
-  tbl-prefix: "**Table**"
-  title-delim: "**.**"
+  fig-title: "Figure"
+  tbl-title: "Table"
+  fig-prefix: "Figure"
+  tbl-prefix: "Table"
+  title-delim: "."
+
 course: Capstone Projects in Data Science
-bibliography: references.bib # file contains bibtex for references
-#always_allow_html: true # this allows to get PDF with HTML features
+bibliography: references.bib
 self-contained: true
+
 execute: 
   warning: false
   message: false
+
 editor: 
   markdown: 
     wrap: 72
@@ -41,24 +60,6 @@ This is for me later, once the slides are ready to go.
 Slides: [slides.html](slides.html){target="_blank"} ( Go to `slides.qmd`
 to edit)
 -->
-
-<style>
-.figure-caption {
-  text-align: center !important;
-  font-size: 1.1em;
-  font-weight: 500;
-}
-
-.gt_heading {
-  text-align: center !important;
-}
-
-.gt_title {
-  text-align: center !important;
-  font-size: 1.1em !important;
-  font-weight: 500 !important;
-}
-</style>
 
 ## Introduction
 
@@ -72,13 +73,14 @@ Northwest Florida, often referred to as the Florida Panhandle, is home to 16 cou
 
 Random Forest is a supervised machine learning algorithm that introduces two sources of randomness during training. First, it uses bootstrap sampling of the training data, meaning data points are randomly selected with replacement so that the same data point may appear multiple times in a tree’s training sample, while others may not appear at all. Second, at each split within a tree, a random subset of predictor variables is considered when determining the best split. A tree continues to split until further splitting stops improving prediction or a preset depth limit is reached (@Dutta2023COVIDML).
 
-In Random Forest a tree will start at a root node containing all sampled data points. Then it chooses a variable to split the data (i.e. flood versus flash flood) then splits all sampled data points by that criteria. The tree creates splits on either side of the original split and then reorganizes the data points based on that criteria, as seen in Figure 1 (@Rigatti2017RandomForest). The severity index score for each storm and the tree’s goal is to continue splitting and to determine what variables and what splits best determine the same severity index.
+In Random Forest a tree will start at a root node containing all sampled data points. Then it chooses a variable to split the data (i.e. flood versus flash flood) then splits all sampled data points by that criteria. The tree creates splits on either side of the original split and then reorganizes the data points based on that criteria, as seen in @fig-random-forest (@Rigatti2017RandomForest). Each decision tree corresponds to the binary split of an explanatory variable: rainfall amount, flood type, or housing unit amount. Each decision produces an outcome determined by the algorithm to create a final prediction of flood damages using random forest for the Northwest Florida counties. 
 
 ```{dot}
 //| label: fig-random-forest
 //| fig-cap: "Conceptual representation of the random forest algorithm"
 //| fig-width: 8
 //| out-width: 100%
+//| fig-align: center
 digraph random_forest_example {
   graph [layout = dot, rankdir = TB, compound = true]
   node [shape = box, style = filled, fillcolor = chartreuse3, fontname = Helvetica]
@@ -156,10 +158,14 @@ $$
 
 ### Data Discussion: 
 
-Data collected for this project utilizes the [NOAA Storm Events Database](https://www.ncdc.noaa.gov/stormevents/); daily precipitation observations from the [Global Historical Climatology Network Daily (GHCN-Daily)](https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily); total population, total housing units, and median home value from the [American Community Survey 5-year estimates](https://data.census.gov/). Variables in the NOAA storm events data set that will be used in this study are listed in Table 1. 
+Data collected for this project utilizes the [NOAA Storm Events Database](https://www.ncdc.noaa.gov/stormevents/); daily precipitation observations from the [Global Historical Climatology Network Daily (GHCN-Daily)](https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily); total population, total housing units, and median home value from the [American Community Survey 5-year estimates](https://data.census.gov/). Variables utilized in this study are listed in @tbl-table-one, including the source for each variable.
 
 
-```{r, fig.align="center"}
+```{r}
+#| label: tbl-table-one
+#| tbl-cap: "Variables Used in Random Forest Model"
+#| fig-align: center
+
 library(gt)
 library(dplyr)
 
@@ -176,7 +182,6 @@ variable_table <- tibble::tibble(
     "Housing Units",
     "Median Home Value"
   ),
-  
   Description = c(
     "County where the storm event occurred",
     "Date of the storm event",
@@ -189,7 +194,6 @@ variable_table <- tibble::tibble(
     "Total number of housing units in the county",
     "Median value of owner-occupied housing units"
   ),
-  
   Unit = c(
     "County name",
     "Date",
@@ -202,7 +206,6 @@ variable_table <- tibble::tibble(
     "Count",
     "USD ($)"
   ),
-  
   Source = c(
     "NOAA Storm Events Database",
     "NOAA Storm Events Database",
@@ -219,16 +222,16 @@ variable_table <- tibble::tibble(
 
 variable_table %>%
   gt() %>%
-  tab_header(
-    title = "Table 1: Variables Used in Random Forest Model"
-  ) %>%
   opt_align_table_header(align = "center")
 
-
 ```
-Floods are categorized as Flash Flood or Flood. In Northwest Florida there have been 1023 flood events, Figure 2. 
+In @fig-flood-event-pie the split between Flash-Flood and Flood-categorized storm events from the year 2000 to the present is shown. The count of 1023 reported flood events represents the total number of floods reported across the 16 Northwest Florida counties starting from the year 2000. The chart shows how the majority of flood events are a part of the flash flood category.
 
-```{r, fig.align="center"}
+```{r}
+#| label: fig-flood-event-pie
+#| fig-cap: "Flash Flood vs Flood Events (2000–Present)"
+#| fig-align: center
+
 library(dplyr)
 library(tidyverse)
 library(ggplot2)
@@ -238,32 +241,32 @@ stormall <- read_csv("StormEvents_NWFL.csv", show_col_types = FALSE) %>%
   mutate(BEGIN_DATE_TIME = mdy(BEGIN_DATE)) %>%
   filter(BEGIN_DATE_TIME >= as.Date("2000-01-01"))
 
-# Count flood types
 flood_counts <- stormall %>%
   count(EVENT_TYPE) %>%
-  mutate(
-    percent = n / sum(n) * 100
-  )
+  mutate(percent = n / sum(n) * 100)
 
 ggplot(flood_counts, aes(x = "", y = percent, fill = EVENT_TYPE)) +
   geom_col(width = 1, color = "white") +
   coord_polar(theta = "y") +
   geom_text(
-    aes(label = paste0(round(percent,1), "%\n(", n, ")")),
+    aes(label = paste0(round(percent, 1), "%\n(", n, ")")),
     position = position_stack(vjust = 0.5),
     color = "white",
     size = 6
   ) +
   labs(
-    title = "Figure 2: Flash Flood vs Flood Events (2000–Present)",
     fill = "Event Type"
   ) +
   scale_fill_manual(values = c("Flash Flood" = "blue2", "Flood" = "chartreuse3")) +
   theme_void()
 ```
-To further visual the number of floods in Northwest Florida, we broke down the type of flood per county in Figure 2. 
+To further visual the number of floods in Northwest Florida, we broke down the type of flood per county in @fig-flood-events-county. The bar graph represents the differences in flash-floods versus flood counts per county in Northwest Florida. The chart visualizes how the flash-flood type dominates in each county. The chart also shows the significant differences in the high versus low flood occurring counties, such as the contrast between the nearly 200 flash floods in Bay County compared to less than 25 flash flood event occurrences in Liberty County over 25 years.
 
-```{r, fig.align="center"}
+```{r}
+#| label: fig-flood-events-county
+#| fig-cap: "Flood and Flash Flood Events by County"
+#| fig-align: center
+
 library(dplyr)
 library(ggplot2)
 library(suncalc)
@@ -275,7 +278,6 @@ stormall %>%
   geom_col(position = "dodge") +
   scale_fill_manual(values = c("Flood" = "blue2", "Flash Flood" = "chartreuse3")) +
   labs(
-    title = "Figure 3: Flood and Flash Flood Events by County",
     x = "County",
     y = "Number of Events",
     fill = "Event Type"
@@ -286,25 +288,14 @@ stormall %>%
   )
 ```
 
-In Figure 3 b the number of flooding events from January 1, 2020 to December 31, 2025, for the 16 counties in Northwest Florida are shown. On the center y-axis damage in millions is shown and on the center y-axis the number of flood events is shown. The orange trend line tells us that the number of flood events is increasing and the red trend line shows us that the total property damage is increasing as well.
+@fig-flood-damage-time depicts the occurrences of flood events and subsequent property damage over time. The number of flood events is assessed from January 1st, 2020, to December 31st, 2025. The flood events are an accumulation of floods in the study area of 16 Northwest Florida counties. On the center y-axis, the property damage in millions is shown, and on the center y-axis, the number of flood events is shown. The orange trend line tells us that the number of flood events is increasing (higher frequency). The red trend line shows us that the total property damage is slightly elevated across the 25 year timeframe. 
 
-```{r, fig.align="center", fig.width=12, fig.height=7}
-library(dplyr)
-library(lubridate)
-
-yearly_data <- stormall %>%
-  mutate(
-    year = year(mdy(BEGIN_DATE)),
-    DAMAGE_PROPERTY_NUM = as.numeric(DAMAGE_PROPERTY_NUM)
-  ) %>%
-  group_by(year) %>%
-  summarise(
-    storms = n(),
-    total_damage = sum(DAMAGE_PROPERTY_NUM, na.rm = TRUE) / 1000000,
-    .groups = "drop"
-  )
-
-scale_factor <- max(yearly_data$storms) / max(yearly_data$total_damage)
+```{r}
+#| label: fig-flood-damage-time
+#| fig-cap: "Flood Events and Property Damage Over Time"
+#| fig-align: center
+#| fig-width: 12
+#| fig-height: 7
 
 library(dplyr)
 library(lubridate)
@@ -367,15 +358,17 @@ ggplot(yearly_data, aes(x = year)) +
   ) +
   
   labs(
-    title = "Figure 4: Flood Events and Property Damage Over Time",
     x = "Year"
   ) +
   
   theme_minimal(base_size = 14)
-
 ```
-Below is table 2 with the variables from the 2024 American Community Survey - 5 Year estimates. 
-```{r, fig.align="center"}
+@tbl-census-nwfl lists the variables from the 2024 American Community Survey, done in the 5 year estimates, from the US Census data. The table shows the population size, number of housing units, and the median home values for each of the 16 Northwest Florida counties. *To more accurately predict flood damage amounts, data from the past six years versus the past 20 years was chosen. Using the most recent data provides us with a more accurate representation of actual damage costs due to inflation, property costs, housing unit numbers, and population.
+```{r}
+#| label: tbl-census-nwfl
+#| tbl-cap: "Population, Housing Units, and Median Home Value by County"
+#| tbl-align: center
+
 library(readxl)
 library(dplyr)
 library(gt)
@@ -394,7 +387,7 @@ census_data %>%
   arrange(desc(Population)) %>%
   gt() %>%
   tab_header(
-    title = "Table 2: Population, Housing Units, and Median Home Value by County",
+    title = "Population, Housing Units, and Median Home Value by County",
     subtitle = "Northwest Florida Counties (ACS 5-Year Estimates - 2024)"
   ) %>%
   cols_label(
@@ -415,11 +408,16 @@ census_data %>%
 ```
 
 
-To more accurately predict flood damage amounts, data from the past six years versus the past 20 years was chosen. Using the most recent data provides us with a more accurate representation of actual damage costs due to inflation, property costs, housing unit numbers, and population. Precipitation data was collected for the past six years, Figure 4.
+To more accurately predict flood damage amounts, data from the past six years versus the past 20 years was chosen. Using the most recent data provides us with a more accurate representation of actual damage costs due to inflation, property costs, housing unit numbers, and population. @fig-monthly-rainfall-county is a collection of bar graphs illustraing the montlhy average rainfall per county in Northwest Florida. 
 
-```{r, fig.align="center"}
+```{r}
+#| label: fig-monthly-rainfall-county
+#| fig-cap: "Average Monthly Rainfall by County"
+#| fig-align: center
 
 library(readr)
+library(dplyr)
+library(ggplot2)
 
 prec <- read_csv("Prec.csv")
 
@@ -432,24 +430,24 @@ monthly_avg <- prec %>%
   group_by(County, month_name) %>%
   summarise(avg_monthly_rain_in = mean(total_monthly_in, na.rm = TRUE), .groups = "drop")
 
-# Ensure month order
 monthly_avg$month_name <- factor(monthly_avg$month_name, levels = month.name)
 
-# Plot with facets
 ggplot(monthly_avg, aes(x = month_name, y = avg_monthly_rain_in)) +
   geom_col(fill = "blue3") +
-  facet_wrap(~ County, ncol=4) +
+  facet_wrap(~ County, ncol = 4) +
   labs(
-    title = "Figure 5: Average Monthly Rainfall by County",
     x = "Month",
     y = "Average Rainfall (inches)"
   ) +
   theme_minimal(base_size = 10) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
-Average flood events per month over the last six years, Figure 5.
+@fig-monthly-flood-events, flood events were analyzed per month for all 16 counties. The graph tells us that even though July has the highest amount of rainfall, as seen in Figure 5, September actually has a higher number of flood events. 
+```{r}
+#| label: fig-monthly-flood-events
+#| fig-cap: "Average Number of Flood Events per Month"
+#| fig-align: center
 
-```{r, fig.align="center"}
 library(dplyr)
 library(ggplot2)
 library(lubridate)
@@ -467,15 +465,18 @@ monthly_floods <- stormall %>%
 ggplot(monthly_floods, aes(x = month, y = avg_events)) +
   geom_col(fill = "blue3") +
   labs(
-    title = "Figure 6: Average Number of Flood Events per Month",
     x = "Month",
     y = "Average Flood Events per Year"
   ) +
   theme_minimal()
 ```
 
-Most intense rainfall events, figure 6. 
-```{r, fig.align="center"}
+To verify the data, rainfall @fig-max-daily-rainfall
+```{r}
+#| label: fig-max-daily-rainfall
+#| fig-cap: "Maximum Daily Rainfall by Month"
+#| fig-align: center
+
 library(dplyr)
 library(lubridate)
 library(ggplot2)
@@ -495,7 +496,6 @@ rain_intensity <- prec %>%
 ggplot(rain_intensity, aes(x = month, y = max_rain)) +
   geom_col(fill = "blue3") +
   labs(
-    title = "Figure 7: Maximum Daily Rainfall by Month",
     x = "Month",
     y = "Maximum Daily Rainfall"
   ) +
