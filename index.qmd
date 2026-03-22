@@ -226,7 +226,7 @@ variable_table %>%
   opt_align_table_header(align = "center")
 
 ```
-According to the data collected from NOAA, Northwest Florida expereienced 1023 flooding events between January 1, 2000 and December 31, 2025. Flooding event distribution is represented in @fig-flood-event-pie. Of the flooding events, 76.1% are categorized as flash floods and 23.9% are categorized as floods. This data indicates that Northwest Florida counties experience short-duration, high-intensity rainfall events more often then long-duration rainfall events.
+According to the data collected from NOAA, Northwest Florida expereienced 1,203 flooding events between January 1, 2000 and December 31, 2025. Flooding event distribution is represented in @fig-flood-event-pie. Of the flooding events, 77.1% are categorized as flash floods and 22.9% are categorized as floods. This data indicates that Northwest Florida counties experience short-duration, high-intensity rainfall events more often then long-duration rainfall events.
 
 ```{r}
 #| label: fig-flood-event-pie
@@ -238,15 +238,15 @@ library(tidyverse)
 library(ggplot2)
 library(lubridate)
 
-stormall <- read_csv("StormEvents_NWFL.csv", show_col_types = FALSE) %>%
+stormevents <- read_csv("StormEvents_NWFL2.csv", show_col_types = FALSE) %>%
   mutate(BEGIN_DATE_TIME = mdy(BEGIN_DATE)) %>%
   filter(BEGIN_DATE_TIME >= as.Date("2000-01-01"))
 
-flood_counts <- stormall %>%
+floodcountall <- stormevents %>%
   count(EVENT_TYPE) %>%
   mutate(percent = n / sum(n) * 100)
 
-ggplot(flood_counts, aes(x = "", y = percent, fill = EVENT_TYPE)) +
+ggplot(floodcountall, aes(x = "", y = percent, fill = EVENT_TYPE)) +
   geom_col(width = 1, color = "white") +
   coord_polar(theta = "y") +
   geom_text(
@@ -273,7 +273,17 @@ library(ggplot2)
 library(suncalc)
 library(lubridate)
 
-stormall %>%
+stormevents <- stormevents %>%
+  mutate(
+    CZ_NAME_STR = case_when(
+      CZ_NAME_STR == "JACKSON CO." ~ "Jackson County",
+      CZ_NAME_STR == "OKALOOSA CO." ~ "Okaloosa County",
+      CZ_NAME_STR == "JACKSON (ZONE)" ~ "Jackson County",
+      TRUE ~ CZ_NAME_STR
+    )
+  )
+
+stormevents %>%
   count(CZ_NAME_STR, EVENT_TYPE) %>%
   ggplot(aes(x = CZ_NAME_STR, y = n, fill = EVENT_TYPE)) +
   geom_col(position = "dodge") +
@@ -302,43 +312,48 @@ library(dplyr)
 library(lubridate)
 library(ggplot2)
 
-yearly_data <- stormall %>%
+yearly_data <- stormevents %>%
   mutate(
-    year = year(mdy(BEGIN_DATE)),
-    DAMAGE_PROPERTY_NUM = as.numeric(DAMAGE_PROPERTY_NUM)
+    BEGIN_DATE = mdy(BEGIN_DATE),
+    year = year(BEGIN_DATE),
+    damage = as.numeric(DAMAGE_PROPERTY_NUM)
   ) %>%
+  filter(!is.na(year)) %>%
   group_by(year) %>%
   summarise(
     storms = n(),
-    total_damage_millions = sum(DAMAGE_PROPERTY_NUM, na.rm = TRUE) / 1000000,
+    total_damage_millions = sum(damage, na.rm = TRUE) / 1000000,
     .groups = "drop"
   )
 
-scale_factor <- max(yearly_data$storms) / max(yearly_data$total_damage_millions)
+scale_factor <- max(yearly_data$storms, na.rm = TRUE) / 
+  max(yearly_data$total_damage_millions, na.rm = TRUE)
 
 ggplot(yearly_data, aes(x = year)) +
   geom_col(aes(y = storms, fill = "Flood Events"), alpha = 0.7) +
-  
-  geom_line(aes(y = total_damage_millions * scale_factor,
-                color = "Total Damage"),
-            linewidth = 1.2) +
-  
-  geom_smooth(aes(y = total_damage_millions * scale_factor,
-                  color = "Damage Trendline"),
-              method = "lm", formula = y ~ x,
-              se = FALSE, linewidth = 1) +
-  
-  geom_smooth(aes(y = storms,
-                  color = "Frequency Trendline"),
-              method = "lm", formula = y ~ x,
-              se = FALSE, linewidth = 1,
-              linetype = "dashed") +
-  
+  geom_line(
+    aes(y = total_damage_millions * scale_factor, color = "Total Damage"),
+    linewidth = 1.2
+  ) +
+  geom_smooth(
+    aes(y = total_damage_millions * scale_factor, color = "Damage Trendline"),
+    method = "lm",
+    formula = y ~ x,
+    se = FALSE,
+    linewidth = 1
+  ) +
+  geom_smooth(
+    aes(y = storms, color = "Frequency Trendline"),
+    method = "lm",
+    formula = y ~ x,
+    se = FALSE,
+    linewidth = 1,
+    linetype = "dashed"
+  ) +
   scale_fill_manual(
     name = "Legend",
     values = c("Flood Events" = "blue3")
   ) +
-  
   scale_color_manual(
     name = "Legend",
     values = c(
@@ -347,21 +362,17 @@ ggplot(yearly_data, aes(x = year)) +
       "Frequency Trendline" = "orange"
     )
   ) +
-  
   scale_y_continuous(
     name = "Number of Flood Events",
-    sec.axis = sec_axis(~ . / scale_factor,
-                        name = "Total Property Damage (Millions of $)")
+    sec.axis = sec_axis(
+      ~ . / scale_factor,
+      name = "Total Property Damage (Millions of $)"
+    )
   ) +
-  
   scale_x_continuous(
     breaks = seq(min(yearly_data$year), max(yearly_data$year), by = 5)
   ) +
-  
-  labs(
-    x = "Year"
-  ) +
-  
+  labs(x = "Year") +
   theme_minimal(base_size = 14)
 ```
 @tbl-census-nwfl presents the demographic variable totals obatined from the [American Community Survey 5-year estimates](https://data.census.gov/). The table includes the population size, number of housing units, and the median home values for each of the 16 Northwest Florida counties from the 2024 survey.
@@ -464,7 +475,7 @@ library(dplyr)
 library(ggplot2)
 library(lubridate)
 
-monthly_floods <- stormall %>%
+monthly_floods <- stormevents %>%
   mutate(
     year = year(BEGIN_DATE_TIME),
     month = month(BEGIN_DATE_TIME, label = TRUE, abbr = FALSE)
@@ -520,3 +531,132 @@ ggplot(rain_intensity, aes(x = month, y = max_rain)) +
 <!--
 To do this we will create a severity index (Table 2) based off of the variables in table one for the 70% split that will be used for training. For the 30% split the raw data for the same variables will be used to check the accuracy of Random forest's ability to predict the flood severity index. The severity index, ranging 0 to 7, will be used as a continuous outcome variable in the regression model.
 -->
+
+```{r}
+library(tidyverse)
+library(randomForest)
+library(caret)
+library(readxl)
+library(zoo)
+
+precp_daily <- Precp2 %>%
+  group_by(County, DATE) %>%
+  summarise(
+    PRCP = mean(PRCP, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+precp_daily %>%
+  count(County, DATE) %>%
+  filter(n > 1)
+```
+```{r}
+
+library(dplyr)
+library(lubridate)
+library(zoo)
+library(readr)
+library(readxl)
+library(stringr)
+
+stormevents <- read_csv("StormEvents_NWFL2.csv", show_col_types = FALSE)
+precp <- read_excel("Precp.xlsx")
+census <- read_excel("CensusData_NWFL.xlsx")
+
+storm_base <- stormevents %>%
+  mutate(
+    County = str_trim(CZ_NAME_STR),
+    BEGIN_DATE = mdy(BEGIN_DATE)
+  ) %>%
+  filter(BEGIN_DATE >= as.Date("2020-01-01"))
+
+nrow(storm_base)
+names(storm_base)
+
+precp <- precp %>%
+  mutate(
+    County = str_trim(County),
+    DATE = as.Date(DATE)
+  )
+precp_daily <- precp %>%
+  group_by(County, DATE) %>%
+  summarise(
+    PRCP = mean(PRCP, na.rm = TRUE),
+    .groups = "drop"
+  )
+precp_daily <- precp %>%
+  group_by(County, DATE) %>%
+  summarise(
+    PRCP = mean(PRCP, na.rm = TRUE),
+    .groups = "drop"
+  )
+precp_daily <- precp_daily %>%
+  arrange(County, DATE) %>%
+  group_by(County) %>%
+  mutate(
+    rain_1day = PRCP,
+    rain_3day = rollapply(PRCP, 3, sum, align = "right", fill = NA),
+    rain_7day = rollapply(PRCP, 7, sum, align = "right", fill = NA)
+  ) %>%
+  ungroup()
+storm_rain <- storm_base %>%
+  left_join(
+    precp_daily %>%
+      select(County, DATE, rain_1day, rain_3day, rain_7day),
+    by = c("County", "BEGIN_DATE" = "DATE")
+  )
+
+nrow(storm_base)
+head(storm_rain)
+
+
+storm_full <- census_data %>%
+  left_join(
+    census_data %>% select(County, Population, HousingUnits, MedianHomeValue),
+    by = "County"
+  )
+
+names(storm_full)
+
+storm_full %>%
+  select(County, Population.x, HousingUnits.x, MedianHomeValue.x) %>%
+  distinct() %>%
+  print(n = 20)
+
+storm_full %>%
+  summarise(
+    pop_missing = sum(is.na(Population.x)),
+    housing_missing = sum(is.na(HousingUnits.x)),
+    value_missing = sum(is.na(MedianHomeValue.x))
+  )
+```
+
+```{r}
+library(dplyr)
+library(randomForest)
+library(caret)
+
+storm_model <- storm_full %>%
+  select(
+    County,
+    EVENT_TYPE,
+    DAMAGE_PROPERTY_NUM,
+    rain_1day,
+    rain_3day,
+    rain_7day,
+    Population.x,
+    HousingUnits.x,
+    MedianHomeValue.x
+  ) %>%
+  drop_na(rain_1day, rain_3day, rain_7day) %>%
+  mutate(
+    County = as.factor(County),
+    EVENT_TYPE = as.factor(EVENT_TYPE),
+
+    log_damage = log1p(DAMAGE_PROPERTY_NUM),
+
+    housing_density = HousingUnits.x / Population.x,
+    property_exposure = HousingUnits.x * MedianHomeValue.x,
+    exposure_log = log1p(Population.x * HousingUnits.x)
+  )
+```
