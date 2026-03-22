@@ -529,134 +529,414 @@ ggplot(rain_intensity, aes(x = month, y = max_rain)) +
 ### Random Forest 
 
 <!--
-To do this we will create a severity index (Table 2) based off of the variables in table one for the 70% split that will be used for training. For the 30% split the raw data for the same variables will be used to check the accuracy of Random forest's ability to predict the flood severity index. The severity index, ranging 0 to 7, will be used as a continuous outcome variable in the regression model.
+The rainfall data had multiple gauges in each county, so I had to combine them.
+
+At first, I thought about averaging, but that didn’t really make sense for flooding. Flooding is usually caused by the heaviest rainfall in an area, not the average.
+
+So instead, I used the maximum rainfall per county per day.
+
+Then I built:
+
+1-day rainfall before the event
+3-day total rainfall before the event
+7-day total rainfall before the event
+
+I also made sure:
+
+every day existed (even if it was 0 rain)
+missing values were treated as 0
+
+The rainfall data had multiple gauges in each county, so I had to combine them.
+
+At first, I thought about averaging, but that didn’t really make sense for flooding. Flooding is usually caused by the heaviest rainfall in an area, not the average.
+
+So instead, I used the maximum rainfall per county per day.
+
+Then I built:
+
+1-day rainfall before the event
+3-day total rainfall before the event
+7-day total rainfall before the event
+
+I also made sure:
+
+every day existed (even if it was 0 rain)
+missing values were treated as 0
 -->
 
 ```{r}
 library(tidyverse)
+library(lubridate)
 library(randomForest)
 library(caret)
 library(readxl)
 library(zoo)
 
-precp_daily <- Precp2 %>%
-  group_by(County, DATE) %>%
+#-------------------------------
+# 1. Flood events
+#-------------------------------
+flood_events <- stormevents %>%
+  mutate(
+    County = str_trim(CZ_NAME_STR),
+    county_key = County %>%
+      str_to_lower() %>%
+      str_remove("\\s+county$") %>%
+      str_trim(),
+    BEGIN_DATE = mdy(BEGIN_DATE),
+    EVENT_TYPE = str_trim(EVENT_TYPE)
+  ) %>%
+  filter(EVENT_TYPE %in% c("Flood", "Flash Flood")) %>%
+  filter(BEGIN_DATE >= as.Date("2020-01-01")) %>%
+  select(
+    EVENT_ID,
+    County,
+    county_key,
+    BEGIN_DATE,
+    EVENT_TYPE,
+    DAMAGE_PROPERTY_NUM,
+    DAMAGE_CROPS_NUM,
+    DEATHS_DIRECT,
+    DEATHS_INDIRECT,
+    INJURIES_DIRECT,
+    INJURIES_INDIRECT,
+    everything()
+  )
+
+nrow(flood_events)
+table(flood_events$EVENT_TYPE)
+names(flood_events)
+```
+```{r}
+#-------------------------------
+# 2. County daily rainfall
+#    Use MAX across gauges, not MEAN
+#-------------------------------
+county_daily_rain <- prec %>%
+  mutate(
+    County = str_trim(County),
+    county_key = County %>%
+      str_to_lower() %>%
+      str_remove("\\s+county$") %>%
+      str_trim(),
+    DATE = as.Date(DATE)
+  ) %>%
+  group_by(County, county_key, DATE) %>%
   summarise(
-    PRCP = mean(PRCP, na.rm = TRUE),
+    PRCP = max(PRCP, na.rm = TRUE),
     .groups = "drop"
   )
 
-precp_daily %>%
-  count(County, DATE) %>%
+# this should return 0 rows
+county_daily_rain %>%
+  count(county_key, DATE) %>%
   filter(n > 1)
 ```
 ```{r}
-
-library(dplyr)
-library(lubridate)
-library(zoo)
-library(readr)
-library(readxl)
-library(stringr)
-
-stormevents <- read_csv("StormEvents_NWFL2.csv", show_col_types = FALSE)
-precp <- read_excel("Precp.xlsx")
-census <- read_excel("CensusData_NWFL.xlsx")
-
-storm_base <- stormevents %>%
-  mutate(
-    County = str_trim(CZ_NAME_STR),
-    BEGIN_DATE = mdy(BEGIN_DATE)
-  ) %>%
-  filter(BEGIN_DATE >= as.Date("2020-01-01"))
-
-nrow(storm_base)
-names(storm_base)
-
-precp <- precp %>%
-  mutate(
-    County = str_trim(County),
-    DATE = as.Date(DATE)
-  )
-precp_daily <- precp %>%
-  group_by(County, DATE) %>%
-  summarise(
-    PRCP = mean(PRCP, na.rm = TRUE),
-    .groups = "drop"
-  )
-precp_daily <- precp %>%
-  group_by(County, DATE) %>%
-  summarise(
-    PRCP = mean(PRCP, na.rm = TRUE),
-    .groups = "drop"
-  )
-precp_daily <- precp_daily %>%
-  arrange(County, DATE) %>%
-  group_by(County) %>%
-  mutate(
-    rain_1day = PRCP,
-    rain_3day = rollapply(PRCP, 3, sum, align = "right", fill = NA),
-    rain_7day = rollapply(PRCP, 7, sum, align = "right", fill = NA)
+#-------------------------------
+# 3. Fill missing dates with 0 rain
+#    so rolling windows are true 1-, 3-, and 7-day periods
+#-------------------------------
+county_daily_rain_complete <- county_daily_rain %>%
+  group_by(County, county_key) %>%
+  complete(
+    DATE = seq(min(DATE, na.rm = TRUE), max(DATE, na.rm = TRUE), by = "day"),
+    fill = list(PRCP = 0)
   ) %>%
   ungroup()
-storm_rain <- storm_base %>%
-  left_join(
-    precp_daily %>%
-      select(County, DATE, rain_1day, rain_3day, rain_7day),
-    by = c("County", "BEGIN_DATE" = "DATE")
+```
+```{r}
+#-------------------------------
+# 4. Prior-day rainfall windows
+#-------------------------------
+county_rain_windows <- county_daily_rain_complete %>%
+  arrange(county_key, DATE) %>%
+  group_by(county_key) %>%
+  mutate(
+    rain_1day_prior = lag(PRCP, 1),
+    rain_3day_prior = lag(
+      rollapply(PRCP, width = 3, FUN = sum, align = "right", fill = NA, partial = FALSE),
+      1
+    ),
+    rain_7day_prior = lag(
+      rollapply(PRCP, width = 7, FUN = sum, align = "right", fill = NA, partial = FALSE),
+      1
+    )
+  ) %>%
+  ungroup() %>%
+  mutate(
+    rain_1day_prior = replace_na(rain_1day_prior, 0),
+    rain_3day_prior = replace_na(rain_3day_prior, 0),
+    rain_7day_prior = replace_na(rain_7day_prior, 0)
   )
-
-nrow(storm_base)
-head(storm_rain)
-
-
-storm_full <- census_data %>%
-  left_join(
-    census_data %>% select(County, Population, HousingUnits, MedianHomeValue),
-    by = "County"
-  )
-
-names(storm_full)
-
-storm_full %>%
-  select(County, Population.x, HousingUnits.x, MedianHomeValue.x) %>%
-  distinct() %>%
+county_rain_windows %>%
+  select(County, county_key, DATE, PRCP, rain_1day_prior, rain_3day_prior, rain_7day_prior) %>%
+  mutate(
+    across(c(PRCP, rain_1day_prior, rain_3day_prior, rain_7day_prior), ~ round(.x, 3))
+  ) %>%
   print(n = 20)
 
-storm_full %>%
+
+
+```
+```{r}
+county_rain_windows <- county_daily_rain_complete %>%
+  arrange(county_key, DATE) %>%
+  group_by(county_key) %>%
+  mutate(
+    rain_1day_prior = lag(PRCP, 1),
+    rain_3day_prior = lag(
+      rollapply(PRCP, width = 3, FUN = sum, align = "right", fill = NA, partial = FALSE),
+      1
+    ),
+    rain_7day_prior = lag(
+      rollapply(PRCP, width = 7, FUN = sum, align = "right", fill = NA, partial = FALSE),
+      1
+    )
+  ) %>%
+  ungroup() %>%
+  mutate(
+    rain_1day_prior = replace_na(rain_1day_prior, 0),
+    rain_3day_prior = replace_na(rain_3day_prior, 0),
+    rain_7day_prior = replace_na(rain_7day_prior, 0)
+  )
+```
+
+
+```{r}
+flood_with_rain <- flood_events %>%
+  left_join(
+    county_rain_windows %>%
+      select(county_key, DATE, rain_1day_prior, rain_3day_prior, rain_7day_prior),
+    by = c("county_key", "BEGIN_DATE" = "DATE")
+  )
+flood_with_context <- flood_with_rain %>%
+  left_join(
+    census_data %>%
+      mutate(
+        County = str_trim(County),
+        county_key = County %>%
+          str_to_lower() %>%
+          str_remove("\\s+county$") %>%
+          str_trim()
+      ) %>%
+      select(county_key, Population, HousingUnits, MedianHomeValue),
+    by = "county_key"
+  )
+
+names(flood_with_context)
+
+flood_with_context %>%
+  select(County, Population, HousingUnits, MedianHomeValue) %>%
+  distinct() %>%
+  print(n = 20)
+```
+```{r}
+flood_model_data <- flood_with_context %>%
+  select(
+    EVENT_ID,
+    County,
+    BEGIN_DATE,
+    DAMAGE_PROPERTY_NUM,
+    rain_1day_prior,
+    rain_3day_prior,
+    rain_7day_prior,
+    Population,
+    HousingUnits,
+    MedianHomeValue
+  ) %>%
+  mutate(
+    log_damage = log1p(DAMAGE_PROPERTY_NUM)
+  )
+```
+
+
+```{r}
+flood_model_data %>%
   summarise(
-    pop_missing = sum(is.na(Population.x)),
-    housing_missing = sum(is.na(HousingUnits.x)),
-    value_missing = sum(is.na(MedianHomeValue.x))
+    damage_missing = sum(is.na(DAMAGE_PROPERTY_NUM)),
+    rain1_missing = sum(is.na(rain_1day_prior)),
+    rain3_missing = sum(is.na(rain_3day_prior)),
+    rain7_missing = sum(is.na(rain_7day_prior)),
+    pop_missing = sum(is.na(Population)),
+    housing_missing = sum(is.na(HousingUnits)),
+    value_missing = sum(is.na(MedianHomeValue))
   )
 ```
 
 ```{r}
-library(dplyr)
-library(randomForest)
-library(caret)
-
-storm_model <- storm_full %>%
-  select(
-    County,
-    EVENT_TYPE,
-    DAMAGE_PROPERTY_NUM,
-    rain_1day,
-    rain_3day,
-    rain_7day,
-    Population.x,
-    HousingUnits.x,
-    MedianHomeValue.x
-  ) %>%
-  drop_na(rain_1day, rain_3day, rain_7day) %>%
-  mutate(
-    County = as.factor(County),
-    EVENT_TYPE = as.factor(EVENT_TYPE),
-
-    log_damage = log1p(DAMAGE_PROPERTY_NUM),
-
-    housing_density = HousingUnits.x / Population.x,
-    property_exposure = HousingUnits.x * MedianHomeValue.x,
-    exposure_log = log1p(Population.x * HousingUnits.x)
+flood_model_clean <- flood_model_data %>%
+  filter(
+    !is.na(log_damage),
+    !is.na(rain_1day_prior),
+    !is.na(rain_3day_prior),
+    !is.na(rain_7day_prior),
+    !is.na(Population),
+    !is.na(HousingUnits),
+    !is.na(MedianHomeValue)
   )
+
+nrow(flood_model_clean)
+
+summary(flood_model_clean)
+```
+<!--
+I ran a random forest model using:
+
+all flood events (including ones with $0 damage)
+rainfall variables
+county variables
+Result:
+R² was basically 0
+What that means:
+
+The model couldn’t explain anything.
+
+Why:
+
+There were a lot of floods with zero damage, which made it hard for the model to learn anything meaningful.
+-->
+
+```{r}
+set.seed(123)
+
+train_index <- sample(
+  seq_len(nrow(flood_model_clean)),
+  size = 0.7 * nrow(flood_model_clean)
+)
+
+train_data <- flood_model_clean[train_index, ]
+test_data  <- flood_model_clean[-train_index, ]
+
+nrow(train_data)
+nrow(test_data)
+```
+
+```{r}
+rf_model <- randomForest(
+  log_damage ~ rain_1day_prior + rain_3day_prior + rain_7day_prior +
+    Population + HousingUnits + MedianHomeValue,
+  data = train_data,
+  ntree = 500,
+  importance = TRUE
+)
+
+rf_model
+```
+```{r}
+pred <- predict(rf_model, newdata = test_data)
+
+rmse <- sqrt(mean((pred - test_data$log_damage)^2))
+r2 <- cor(pred, test_data$log_damage)^2
+
+rmse
+r2
+
+importance(rf_model)
+varImpPlot(rf_model)
+```
+<!--
+Step 5 focused on improving the first model. The original random forest included all flood and flash flood events, even those with zero property damage. That model performed very poorly, which suggested that the large number of zero-damage events was making it difficult for the model to detect meaningful patterns. To address this, I created a second version of the dataset that only kept events with property damage greater than zero. I then ran a new random forest model using the same predictors: 1-day prior rainfall, 3-day prior rainfall, 7-day prior rainfall, population, housing units, and median home value. This second model performed much better than the baseline model. The improvement suggested that removing zero-damage events helped reduce noise and made the relationship between rainfall, county characteristics, and damage easier to detect.
+-->
+
+```{r}
+flood_model2 <- flood_model_clean %>%
+  filter(DAMAGE_PROPERTY_NUM > 0)
+```
+
+```{r}
+set.seed(123)
+
+train_index2 <- sample(
+  seq_len(nrow(flood_model2)),
+  size = 0.7 * nrow(flood_model2)
+)
+
+train_data2 <- flood_model2[train_index2, ]
+test_data2  <- flood_model2[-train_index2, ]
+
+rf_model2 <- randomForest(
+  log_damage ~ rain_1day_prior + rain_3day_prior + rain_7day_prior +
+    Population + HousingUnits + MedianHomeValue,
+  data = train_data2,
+  ntree = 500,
+  importance = TRUE
+)
+```
+
+```{r}
+pred2 <- predict(rf_model2, newdata = test_data2)
+
+rmse2 <- sqrt(mean((pred2 - test_data2$log_damage)^2))
+r22 <- cor(pred2, test_data2$log_damage)^2
+
+rmse2
+r22
+```
+
+<!--
+Step 5 focused on improving the first model. The original random forest included all flood and flash flood events, even those with zero property damage. That model performed very poorly, which suggested that the large number of zero-damage events was making it difficult for the model to detect meaningful patterns. To address this, I created a second version of the dataset that only kept events with property damage greater than zero. I then ran a new random forest model using the same predictors: 1-day prior rainfall, 3-day prior rainfall, 7-day prior rainfall, population, housing units, and median home value. This second model performed much better than the baseline model. The improvement suggested that removing zero-damage events helped reduce noise and made the relationship between rainfall, county characteristics, and damage easier to detect.-->
+
+```{r}
+flood_model3 <- flood_model2 %>%
+  mutate(
+    rain_pop = rain_3day_prior * Population,
+    rain_housing = rain_3day_prior * HousingUnits
+  )
+```
+
+```{r}
+set.seed(123)
+
+train_index3 <- sample(
+  seq_len(nrow(flood_model3)),
+  size = 0.7 * nrow(flood_model3)
+)
+
+train_data3 <- flood_model3[train_index3, ]
+test_data3  <- flood_model3[-train_index3, ]
+
+rf_model3 <- randomForest(
+  log_damage ~ rain_1day_prior + rain_3day_prior + rain_7day_prior +
+    Population + HousingUnits + MedianHomeValue +
+    rain_pop + rain_housing,
+  data = train_data3,
+  ntree = 500,
+  importance = TRUE
+)
+
+pred3 <- predict(rf_model3, newdata = test_data3)
+
+rmse3 <- sqrt(mean((pred3 - test_data3$log_damage)^2))
+r23 <- cor(pred3, test_data3$log_damage)^2
+
+rmse3
+r23
+```
+
+```{r}
+importance(rf_model2)
+varImpPlot(rf_model2)
+```
+<!--
+Step 7 focused on simplifying the model based on the variable importance results. The importance output showed that the 3-day and 7-day rainfall variables were not contributing much and in some cases appeared to hurt performance. In contrast, 1-day prior rainfall remained useful, while population, housing units, and median home value were consistently stronger predictors. Based on that, I created a fourth and final model using only 1-day prior rainfall, population, housing units, and median home value. This model performed slightly better than the second model and was the best overall version. The final results suggest that flood-related property damage in this dataset is explained more by county exposure variables, such as population and housing, than by rainfall totals alone. They also suggest that short-term rainfall is more useful for prediction than longer rainfall accumulation windows.
+
+Overall, the modeling process showed that the most useful improvements came from filtering out zero-damage events and simplifying the predictor set. More complex versions of the model did not perform better. The final model was still limited in predictive power, which is reasonable given that flood damage is influenced by many factors that were not included in the dataset, such as drainage conditions, elevation, infrastructure, and differences in local reporting. Even so, the analysis still provided useful insight into which variables were most related to damage and helped identify a more defensible final model.
+-->
+
+```{r}
+rf_model4 <- randomForest(
+  log_damage ~ rain_1day_prior +
+    Population + HousingUnits + MedianHomeValue,
+  data = train_data2,
+  ntree = 500,
+  importance = TRUE
+)
+
+pred4 <- predict(rf_model4, newdata = test_data2)
+
+rmse4 <- sqrt(mean((pred4 - test_data2$log_damage)^2))
+r24 <- cor(pred4, test_data2$log_damage)^2
+
+rmse4
+r24
 ```
