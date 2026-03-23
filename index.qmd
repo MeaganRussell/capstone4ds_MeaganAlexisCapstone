@@ -6,7 +6,7 @@ date: last-modified
 format: 
   html:
     code-fold: true
-    code-summary: "Show code"
+    code-summary: "Hide code"
     fig-cap-location: top
     include-in-header:
       text: |
@@ -47,12 +47,14 @@ bibliography: references.bib
 self-contained: true
 
 execute: 
+  echo: false
   warning: false
   message: false
 
 editor: 
   markdown: 
     wrap: 72
+
 ---
 <!--
 
@@ -529,11 +531,9 @@ ggplot(rain_intensity, aes(x = month, y = max_rain)) +
 ### Random Forest 
 
 <!--
-The rainfall data had multiple gauges in each county, so I had to combine them.
+The rainfall data had multiple gauges in each county, so we combined them.
 
-At first, I thought about averaging, but that didn’t really make sense for flooding. Flooding is usually caused by the heaviest rainfall in an area, not the average.
-
-So instead, I used the maximum rainfall per county per day.
+We used the maximum rainfall per county per day.
 
 Then I built:
 
@@ -565,6 +565,11 @@ missing values were treated as 0
 -->
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
 library(tidyverse)
 library(lubridate)
 library(randomForest)
@@ -607,6 +612,10 @@ table(flood_events$EVENT_TYPE)
 names(flood_events)
 ```
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
 #-------------------------------
 # 2. County daily rainfall
 #    Use MAX across gauges, not MEAN
@@ -632,6 +641,12 @@ county_daily_rain %>%
   filter(n > 1)
 ```
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
 #-------------------------------
 # 3. Fill missing dates with 0 rain
 #    so rolling windows are true 1-, 3-, and 7-day periods
@@ -645,6 +660,11 @@ county_daily_rain_complete <- county_daily_rain %>%
   ungroup()
 ```
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
 #-------------------------------
 # 4. Prior-day rainfall windows
 #-------------------------------
@@ -679,6 +699,12 @@ county_rain_windows %>%
 
 ```
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
 county_rain_windows <- county_daily_rain_complete %>%
   arrange(county_key, DATE) %>%
   group_by(county_key) %>%
@@ -703,6 +729,10 @@ county_rain_windows <- county_daily_rain_complete %>%
 
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
 flood_with_rain <- flood_events %>%
   left_join(
     county_rain_windows %>%
@@ -731,6 +761,12 @@ flood_with_context %>%
   print(n = 20)
 ```
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
 flood_model_data <- flood_with_context %>%
   select(
     EVENT_ID,
@@ -751,6 +787,10 @@ flood_model_data <- flood_with_context %>%
 
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
 flood_model_data %>%
   summarise(
     damage_missing = sum(is.na(DAMAGE_PROPERTY_NUM)),
@@ -764,6 +804,10 @@ flood_model_data %>%
 ```
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
 flood_model_clean <- flood_model_data %>%
   filter(
     !is.na(log_damage),
@@ -797,6 +841,12 @@ There were a lot of floods with zero damage, which made it hard for the model to
 -->
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
 set.seed(123)
 
 train_index <- sample(
@@ -810,8 +860,13 @@ test_data  <- flood_model_clean[-train_index, ]
 nrow(train_data)
 nrow(test_data)
 ```
-
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
 rf_model <- randomForest(
   log_damage ~ rain_1day_prior + rain_3day_prior + rain_7day_prior +
     Population + HousingUnits + MedianHomeValue,
@@ -823,6 +878,11 @@ rf_model <- randomForest(
 rf_model
 ```
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
 pred <- predict(rf_model, newdata = test_data)
 
 rmse <- sqrt(mean((pred - test_data$log_damage)^2))
@@ -839,11 +899,23 @@ Step 5 focused on improving the first model. The original random forest included
 -->
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
 flood_model2 <- flood_model_clean %>%
   filter(DAMAGE_PROPERTY_NUM > 0)
 ```
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
 set.seed(123)
 
 train_index2 <- sample(
@@ -864,6 +936,12 @@ rf_model2 <- randomForest(
 ```
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
 pred2 <- predict(rf_model2, newdata = test_data2)
 
 rmse2 <- sqrt(mean((pred2 - test_data2$log_damage)^2))
@@ -874,9 +952,19 @@ r22
 ```
 
 <!--
-Step 5 focused on improving the first model. The original random forest included all flood and flash flood events, even those with zero property damage. That model performed very poorly, which suggested that the large number of zero-damage events was making it difficult for the model to detect meaningful patterns. To address this, I created a second version of the dataset that only kept events with property damage greater than zero. I then ran a new random forest model using the same predictors: 1-day prior rainfall, 3-day prior rainfall, 7-day prior rainfall, population, housing units, and median home value. This second model performed much better than the baseline model. The improvement suggested that removing zero-damage events helped reduce noise and made the relationship between rainfall, county characteristics, and damage easier to detect.-->
+Step 6 tested whether combining rainfall with exposure variables would improve the model. The idea was that flood damage might depend not only on how much rain fell, but also on how many people or structures were exposed to that rainfall. To test this, I created additional variables by multiplying rainfall by population and rainfall by housing units. These new variables were added to the model along with the original predictors.
+
+After running the model, the results showed that performance decreased compared to the previous model. This indicates that adding these interaction variables did not improve prediction and instead introduced additional noise. One likely reason is that random forest models already capture nonlinear relationships and interactions automatically, so manually creating these terms was unnecessary.
+
+Overall, this step showed that increasing model complexity does not always improve results. In this case, the simpler model performed better, so the interaction variables were not included in the final version.-->
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
 flood_model3 <- flood_model2 %>%
   mutate(
     rain_pop = rain_3day_prior * Population,
@@ -885,6 +973,12 @@ flood_model3 <- flood_model2 %>%
 ```
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
 set.seed(123)
 
 train_index3 <- sample(
@@ -914,6 +1008,12 @@ r23
 ```
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
 importance(rf_model2)
 varImpPlot(rf_model2)
 ```
@@ -924,6 +1024,12 @@ Overall, the modeling process showed that the most useful improvements came from
 -->
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
 rf_model4 <- randomForest(
   log_damage ~ rain_1day_prior +
     Population + HousingUnits + MedianHomeValue,
@@ -939,4 +1045,146 @@ r24 <- cor(pred4, test_data2$log_damage)^2
 
 rmse4
 r24
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
+test_data2$predicted_log_damage <- pred4
+
+county_damage_rank <- test_data2 %>%
+  group_by(County) %>%
+  summarise(
+    avg_predicted_damage = mean(predicted_log_damage, na.rm = TRUE),
+    n_events = n()
+  ) %>%
+  arrange(desc(avg_predicted_damage))
+
+county_damage_rank
+```
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
+county_damage_rank %>%
+  filter(n_events >= 5)
+```
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+county_actual_damage <- flood_model2 %>%
+  group_by(County) %>%
+  summarise(
+    avg_actual_damage = mean(DAMAGE_PROPERTY_NUM, na.rm = TRUE),
+    n_events = n()
+  ) %>%
+  arrange(desc(avg_actual_damage))
+
+county_actual_damage
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+left_join(county_damage_rank, county_actual_damage, by = "County")
+```
+
+```{r}
+#| label: rsme-progression
+#| fig-cap: "Random Forest Model Performance Comparison"
+#| fig-align: center
+
+library(tidyverse)
+library(patchwork)
+
+model_results <- tibble(
+  Model = c("Model 1\nAll Data",
+            "Model 2\nDamage > 0",
+            "Model 3\n+ Interactions",
+            "Model 4\nFinal Reduced"),
+  R2 = c(0.001039165, 0.04748602, 0.01711877, 0.05069955),
+  RMSE = c(2.748546, 1.922366, 2.059047, 1.912249)
+)
+
+p1 <- ggplot(model_results, aes(x = Model, y = R2)) +
+  geom_col(fill = "blue3") +
+ 
+  labs(
+    title = expression(R^2 ~ "by Model"),
+    x = NULL,
+    y = expression(R^2)
+  ) +
+  theme_minimal(base_size = 12)
+
+p2 <- ggplot(model_results, aes(x = Model, y = RMSE)) +
+  geom_col(fill = "blue3") +
+ 
+  labs(
+    title = "RMSE by Model",
+    x = NULL,
+    y = "RMSE"
+  ) +
+  theme_minimal(base_size = 12)
+
+(p1 + p2) +
+  plot_annotation(
+    title = "Random Forest Model Performance Comparison"
+  ) &
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+  )
+```
+
+
+```{r}
+#| label: top-five-counties
+#| fig-cap: "Average Predicted Flood Damage by County"
+#| fig-align: center
+
+library(dplyr)
+library(ggplot2)
+library(scales)
+
+# Convert predictions from log back to dollars and create county summary
+county_damage_rank <- test_data2 %>%
+  mutate(predicted_damage = exp(pred4) - 1) %>%
+  group_by(County) %>%
+  summarise(
+    avg_predicted_damage = mean(predicted_damage, na.rm = TRUE),
+    n_events = n(),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(avg_predicted_damage))
+
+# Keep top 10 counties
+county_damage_rank_top <- county_damage_rank %>%
+  slice(1:10)
+
+# Plot
+ggplot(county_damage_rank_top,
+       aes(x = reorder(County, avg_predicted_damage),
+           y = avg_predicted_damage)) +
+  geom_col() +
+  coord_flip() +
+  geom_col(fill = "blue3")+
+  scale_y_continuous(labels = dollar) +
+  labs(
+    title = "Top Counties by Predicted Flood Damage",
+    x = "County",
+    y = "Average Predicted Damage ($)"
+  ) +
+  theme_minimal()
 ```
