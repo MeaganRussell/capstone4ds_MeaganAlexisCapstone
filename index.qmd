@@ -159,7 +159,7 @@ $$
 
 ## Analysis and Results
 
-### Data Discussion: 
+### Data Sources: 
 
 Data collected for this project utilizes the [NOAA Storm Events Database](https://www.ncdc.noaa.gov/stormevents/); daily precipitation observations from the [Global Historical Climatology Network Daily (GHCN-Daily)](https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily); total population, total housing units, and median home value from the [American Community Survey 5-year estimates](https://data.census.gov/). Variables utilized in this study are listed in @tbl-table-one, including the source for each variable.
 
@@ -228,6 +228,18 @@ variable_table %>%
   opt_align_table_header(align = "center")
 
 ```
+### Data Processing
+
+Data from the NOAA Storm Events Database was collected for the 16 counties in Northwest Florida. Property damage and crop damage amounts were combined to create Total Damage. Flood damage amounts ranged from $0 to hundreds of millions of dollars and many of the flood events resulted in $0 damage. To account for the numerous zeros, the log of total damage was used in the random forest models. 
+
+Data from the Global Historical Climatology Network Daily was collected and precipitation days without data were given a zero for precipitation. Precipitation data was already in inches so no further calculations were required.
+
+Wakulla County did not have any precipitation gauges in the county, so precipitation data was collected from the four surrounding counties (Jefferson, Liberty, Leon, Franklin). All days were averaged for the four counties to offer a representation of Wakulla County. In addition, new columns were created for 1-day, 3-day, and 7-day average rainfall prior to a known flood event. 
+
+Once all data sources spreadsheets were cleaned up they were merged into one spreadsheet using county name. 
+
+### Data Visualization
+
 According to the data collected from NOAA, Northwest Florida expereienced 1,203 flooding events between January 1, 2000 and December 31, 2025. Flooding event distribution is represented in @fig-flood-event-pie. Of the flooding events, 77.1% are categorized as flash floods and 22.9% are categorized as floods. This data indicates that Northwest Florida counties experience short-duration, high-intensity rainfall events more often then long-duration rainfall events.
 
 ```{r}
@@ -531,6 +543,8 @@ ggplot(rain_intensity, aes(x = month, y = max_rain)) +
 ### Random Forest 
 
 <!--
+
+
 The rainfall data had multiple gauges in each county, so we combined them.
 
 We used the maximum rainfall per county per day.
@@ -823,22 +837,8 @@ nrow(flood_model_clean)
 
 summary(flood_model_clean)
 ```
-<!--
-I ran a random forest model using:
 
-all flood events (including ones with $0 damage)
-rainfall variables
-county variables
-Result:
-R² was basically 0
-What that means:
-
-The model couldn’t explain anything.
-
-Why:
-
-There were a lot of floods with zero damage, which made it hard for the model to learn anything meaningful.
--->
+The first model ran used multiple variables to predict total damage from a known flood event. The variables were 1-day prior rainfall, 3-day prior rainfall, 7-day prior rainfall, population, housing units, and median home value. The R² and RSME for the first model were 0.001 and 2.748, respectively. These numbers suggest that the model was unable to learn anything meaningful, possibly due to the number of flood events with zero damage. 
 
 ```{r}
 #| echo: false
@@ -894,9 +894,8 @@ r2
 importance(rf_model)
 varImpPlot(rf_model)
 ```
-<!--
-Step 5 focused on improving the first model. The original random forest included all flood and flash flood events, even those with zero property damage. That model performed very poorly, which suggested that the large number of zero-damage events was making it difficult for the model to detect meaningful patterns. To address this, I created a second version of the dataset that only kept events with property damage greater than zero. I then ran a new random forest model using the same predictors: 1-day prior rainfall, 3-day prior rainfall, 7-day prior rainfall, population, housing units, and median home value. This second model performed much better than the baseline model. The improvement suggested that removing zero-damage events helped reduce noise and made the relationship between rainfall, county characteristics, and damage easier to detect.
--->
+
+To verify our assumption that the zeros from total damage were the issue with the first model, the second model of the dataset only kept events with property damage greater than zero. The second model used the same predictors: 1-day prior rainfall, 3-day prior rainfall, 7-day prior rainfall, population, housing units, and median home value. The second model preformed much better than the first model, resulting in a R² and RSME of 0.047 and 1.922, respectively. This suggests that removing the floods events with zero damage helped the model learn the relationship between rainfall, county characteristics, and damage more accurately. However, the model was still not predicting total damage very well. 
 
 ```{r}
 #| echo: false
@@ -951,12 +950,9 @@ rmse2
 r22
 ```
 
-<!--
-Step 6 tested whether combining rainfall with exposure variables would improve the model. The idea was that flood damage might depend not only on how much rain fell, but also on how many people or structures were exposed to that rainfall. To test this, I created additional variables by multiplying rainfall by population and rainfall by housing units. These new variables were added to the model along with the original predictors.
 
-After running the model, the results showed that performance decreased compared to the previous model. This indicates that adding these interaction variables did not improve prediction and instead introduced additional noise. One likely reason is that random forest models already capture nonlinear relationships and interactions automatically, so manually creating these terms was unnecessary.
+To further improve the second model, the third model included exposure variables such as people and structures exposed to rainfall. To calculate these new variables, rainfall were multipled by population and rainfall by housing units. The third model still included 1-day prior rainfall, 3-day prior rainfall, 7-day prior rainfall, population, housing units, and median home value. The R² and RSME for model three were 0.017 and 2.059, respectively. These results suggested that the new variables did not improve total damage prediction and instead introduced noise to the model. 
 
-Overall, this step showed that increasing model complexity does not always improve results. In this case, the simpler model performed better, so the interaction variables were not included in the final version.-->
 
 ```{r}
 #| echo: false
@@ -1017,11 +1013,9 @@ r23
 importance(rf_model2)
 varImpPlot(rf_model2)
 ```
-<!--
-Step 7 focused on simplifying the model based on the variable importance results. The importance output showed that the 3-day and 7-day rainfall variables were not contributing much and in some cases appeared to hurt performance. In contrast, 1-day prior rainfall remained useful, while population, housing units, and median home value were consistently stronger predictors. Based on that, I created a fourth and final model using only 1-day prior rainfall, population, housing units, and median home value. This model performed slightly better than the second model and was the best overall version. The final results suggest that flood-related property damage in this dataset is explained more by county exposure variables, such as population and housing, than by rainfall totals alone. They also suggest that short-term rainfall is more useful for prediction than longer rainfall accumulation windows.
+As learned in model three, a complex model is not always the best model. Model four was simplified by utilizing 1-day prior rainfall, population, housing units, median home value, and only storms with total damage over zero dollars. Removing 3-day and 7-day rainfall variables was completed because past models listed those variables as least important. The 1-day rainfall variable remained useful in all models, similar to housing unites, population, and median home value. The R² and RSME for model four were 0.036 and 1.959, respectively. This result suggested that short-term rainfall was more useful for predicting total damage than longer rainfall accumulations. 
 
-Overall, the modeling process showed that the most useful improvements came from filtering out zero-damage events and simplifying the predictor set. More complex versions of the model did not perform better. The final model was still limited in predictive power, which is reasonable given that flood damage is influenced by many factors that were not included in the dataset, such as drainage conditions, elevation, infrastructure, and differences in local reporting. Even so, the analysis still provided useful insight into which variables were most related to damage and helped identify a more defensible final model.
--->
+Overall, the most useful improvement was removing flood events with zero total damage and simplifying the predictor set.  Hoever, the fourth model still restricted in its predictive power, which is understandable since flood damage can be influenced by many other factors not included in the datasets used for this study. For example, soil type and permeability plus elevation can influnce flood damage. To show the progession of our models, all R² and RSME values can be seen in @fig-rsme-progression.
 
 ```{r}
 #| echo: false
@@ -1103,7 +1097,7 @@ left_join(county_damage_rank, county_actual_damage, by = "County")
 ```
 
 ```{r}
-#| label: rsme-progression
+#| label: fig-rsme-progression
 #| fig-cap: "Random Forest Model Performance Comparison"
 #| fig-align: center
 
@@ -1140,17 +1134,15 @@ p2 <- ggplot(model_results, aes(x = Model, y = RMSE)) +
   theme_minimal(base_size = 12)
 
 (p1 + p2) +
-  plot_annotation(
-    title = "Random Forest Model Performance Comparison"
-  ) &
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),
   )
 ```
 
+Though the models did not have strong predictive power for total damage, the predicitive damage by county could be calcualted. In @fig-top-five-counties, the top counties and their predicted total damage can be seen.
 
 ```{r}
-#| label: top-five-counties
+#| label: fig-top-five-counties
 #| fig-cap: "Average Predicted Flood Damage by County"
 #| fig-align: center
 
@@ -1171,7 +1163,7 @@ county_damage_rank <- test_data2 %>%
 
 # Keep top 10 counties
 county_damage_rank_top <- county_damage_rank %>%
-  slice(1:10)
+  slice(1:5)
 
 # Plot
 ggplot(county_damage_rank_top,
@@ -1182,7 +1174,6 @@ ggplot(county_damage_rank_top,
   geom_col(fill = "blue3")+
   scale_y_continuous(labels = dollar) +
   labs(
-    title = "Top Counties by Predicted Flood Damage",
     x = "County",
     y = "Average Predicted Damage ($)"
   ) +
