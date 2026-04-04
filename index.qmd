@@ -1139,6 +1139,70 @@ p2 <- ggplot(model_results, aes(x = Model, y = RMSE)) +
   )
 ```
 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| include: false
+
+
+results_m1 <- data.frame(
+  actual = test_data$log_damage,
+  predicted = pred,
+  model = "Model 1"
+)
+results_m4 <- data.frame(
+  actual = test_data2$log_damage,
+  predicted = pred4,
+  model = "Model 4"
+)
+
+results_all <- rbind(results_m1, results_m4)
+
+results_all <- results_all %>%
+  mutate(
+    actual_dollars = exp(actual) - 1,
+    predicted_dollars = exp(predicted) - 1
+  )
+
+```
+To visualize the predictive power of Model 1 and 4, a predicted vs. actual scatter plot was created (@fig-predicted-vs-actual-log). In Model 1 the plot shows substantial scatter, indicating the model had poor predictive capability. Model 4 provided a slight improvement, with the values falling somewhat closer to the 1:1 reference line, however, they were not tight to the line. Model 4 also had limited ability to accuractly predict the total damage from floods.
+```{r}
+#| label: fig-predicted-vs-actual-log
+#| fig-cap: "Predicted vs Actual Flood Damage for Model 1 and Model 4"
+#| fig-align: center
+
+library(ggplot2)
+
+ggplot(results_all, aes(x = actual, y = predicted)) +
+  geom_abline(
+    slope = 1,
+    intercept = 0,
+    linetype = "dashed",
+    color = "black",
+    linewidth = 1
+  ) +
+  geom_point(aes(color = model), alpha = 0.7, size = 2.5) +
+  facet_wrap(~model) +
+  scale_color_manual(values = c(
+    "Model 1" = "chartreuse3",
+    "Model 4" = "blue3"
+  )) +
+  labs(
+    x = "Actual Log Damage",
+    y = "Predicted Log Damage"
+  ) +
+theme_minimal(base_size = 12) +
+theme(
+  legend.position = "none",
+  strip.text = element_text(face = "bold", size = 12),
+  panel.grid.major = element_line(color = "gray85"),
+  panel.grid.minor = element_blank(),
+  axis.title = element_text(face = "bold")
+)
+```
+
 Though the models did not have strong predictive power for total damage, the predicitive damage by county could be calcualted. In @fig-top-five-counties, the top counties and their predicted total damage can be seen.
 
 ```{r}
