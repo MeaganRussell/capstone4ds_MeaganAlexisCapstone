@@ -1,0 +1,57 @@
+.reveal {
+  font-family: "Aptos", "Segoe UI", sans-serif;
+  font-size: 28px;
+}
+
+.reveal .slides section {
+  text-align: left;
+}
+
+.reveal h1,
+.reveal h2 {
+  color: blue3;
+}
+
+.reveal h3 {
+  color: chartreuse3;
+}
+
+.reveal p,
+.reveal li {
+  color: #1d2731;
+}
+
+.reveal .progress,
+.reveal .slide-number {
+  color: blue3;
+}
+
+.reveal table {
+  width: 100%;
+  font-size: 0.80em;
+  border-collapse: collapse;
+}
+
+.reveal table th {
+  background-color: blue3;
+  color: white;
+  padding: 8px;
+}
+
+.reveal table td {
+  padding: 8px;
+  border-bottom: 1px solid #d9d9d9;
+}
+
+.reveal table tr:nth-child(even) {
+  background-color: #f3f8ff;
+}
+
+.reveal pre code {
+  font-size: 0.72em;
+  line-height: 1.2;
+}
+
+.small {
+  font-size: 0.55em;
+}
