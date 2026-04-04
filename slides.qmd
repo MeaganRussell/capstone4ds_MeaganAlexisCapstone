@@ -101,7 +101,7 @@ MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
 $$
 
 
-# Analysis and Results
+# Analysis and Results {.center}
 
 ## Data Sources
 
@@ -246,7 +246,6 @@ stormevents %>%
 
 ## Flood Events Over Time
 
-Yearly flood event totals and total damage are plotted for yearly from January 1, 2020 to December 31, 2025.
 
 ```{r}
 #| label: fig-flood-damage-time
@@ -325,8 +324,6 @@ ggplot(yearly_data, aes(x = year)) +
 
 
 ## Census Data
-
-The demographic variable totals were obatined from the [American Community Survey 5-year estimates](https://data.census.gov/).
 
 ```{r}
 #| label: tbl-census-nwfl
@@ -415,8 +412,6 @@ ggplot(monthly_avg, aes(x = month, y = avg_monthly_rain_in)) +
 ```
 
 ## Average Flood Events 
-
-As shown in @fig-monthly-rainfall-county, rainfall amounts are highest during the summer months. However, @fig-monthly-flood-events indicates that flood events occur more frequently in September and April.
 
 ```{r}
 #| label: fig-monthly-flood-events
