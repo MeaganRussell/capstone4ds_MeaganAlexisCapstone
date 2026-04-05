@@ -17,6 +17,92 @@ editor: visual
 
 ## Introduction
 
+Why:
+
+- Flooding is a frequent and costly hazard in Northwest Florida  
+- Damage varies widely across flood events  
+- Understanding what drives this variability can help improve planning and mitigation efforts
+
+Research Focus and Goal:
+
+- This study examines flood events across 16 counties in Northwest Florida  
+- Uses historical data on flood events, rainfall, and county characteristics  
+- The goal is to explore whether these factors can help explain flood damage  
+
+## Key Questions
+
+::: {.columns valign="center"}
+
+::: {.column width="45%"}
+
+### What drives flood damage?
+
+- Can rainfall patterns improve prediction?  
+- Do county-level characteristics matter?  
+
+### How can Machine Learning help?
+
+- Can Random Forest be used to predict flood damage?
+- If so, what variables are the most useful?
+
+:::
+
+::: {.column width="50%"}
+
+![](Flood.jpg){width=100% height=180px}
+
+![](Flood2.jpg){width=100% height=180px}
+
+![](Flood3.jpg){width=100% height=180px}
+
+:::
+
+:::
+
+```{r}
+library(sf)
+library(tigris)
+library(ggplot2)
+library(dplyr)
+
+options(tigris_use_cache = TRUE)
+
+fl_counties <- counties(state = "FL", year = 2020)
+
+nw_county_names <- c(
+  "Escambia", "Santa Rosa", "Okaloosa", "Walton",
+  "Holmes", "Washington", "Bay", "Jackson",
+  "Calhoun", "Gulf", "Franklin", "Liberty",
+  "Gadsden", "Leon", "Wakulla", "Jefferson"
+)
+
+nw_fl <- fl_counties %>%
+  filter(NAME %in% nw_county_names) %>%
+  mutate(NAME = factor(NAME, levels = nw_county_names)) %>%
+  arrange(NAME) %>%
+  mutate(id = row_number())
+
+fl_counties_proj <- st_transform(fl_counties, 3086)
+nw_fl_proj <- st_transform(nw_fl, 3086)
+
+nw_labels <- st_point_on_surface(nw_fl_proj)
+nw_labels$id <- nw_fl_proj$id
+
+map_plot <- ggplot() +
+  geom_sf(data = fl_counties_proj, fill = "gray90", color = "white") +
+  geom_sf(data = nw_fl_proj, fill = "#4DA3FF", color = "black", size = 0.4) +
+  geom_sf_text(data = nw_labels, aes(label = id), size = 3, fontface = "bold") +
+  coord_sf(
+    xlim = st_bbox(nw_fl_proj)[c("xmin", "xmax")] + c(-50000, 30000),
+    ylim = st_bbox(nw_fl_proj)[c("ymin", "ymax")] + c(-30000, 30000),
+    expand = FALSE
+  ) +
+  labs(title = "Northwest Florida Study Area") +
+  theme_void() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 16)
+  )
+```
 
 ## Statiscial Method: Random Forest
 
@@ -72,25 +158,41 @@ digraph random_forest_example {
 
 ## Features
 
+::: {.columns}
+
+::: {.column width="33%"}
+
 ### Assumptions
 
-* Each tree makes its own decisions.
-* Data points are chosen randomly to reduce mistakes.
-* Sufficient data ensures the trees have unique patterns and variety.
-* Combining the predictions from different trees leads to a more accurate final result.
+- Each tree makes its own decisions.  
+- Data points are chosen randomly to reduce mistakes.  
+- Sufficient data ensures the trees have unique patterns and variety.  
+- Combining the predictions from different trees leads to a more accurate final result.  
+
+:::
+
+::: {.column width="33%"}
 
 ### Advantages
 
-* Easy to identify importance of features
-* Multiple decision trees tend to cause little risk of overfitting (not too close to original training data)
-* Very accurate due to multiple subgroups
-* Less need for data management (pre-processing to perform random forest)
+- Easy to identify importance of features  
+- Multiple decision trees tend to cause little risk of overfitting (not too close to original training data)  
+- Very accurate due to multiple subgroups  
+- Less need for data management (pre-processing to perform random forest)  
+
+:::
+
+::: {.column width="33%"}
 
 ### Limitations
 
-* Slower to acquire observations for best decision making
-* Bound by the lowest and highest observations (no extrapolate)
-* Difficult to interpret the decisions of ‘best features’ seen with trees## Data and Visualization
+- Slower to acquire observations for best decision making  
+- Bound by the lowest and highest observations (no extrapolate)  
+- Difficult to interpret the decisions of ‘best features’ seen with trees  
+
+:::
+
+:::
 
 ## Formula
 
@@ -99,6 +201,32 @@ Mean square error is used in random forest regression to determine the optimal s
 $$
 MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
 $$
+
+
+
+## Study Area
+
+::: columns
+
+::: {.column width="55%"}
+
+```{r, echo=FALSE, fig.width=8, fig.height=6, out.width='100%'}
+map_plot
+```
+
+:::
+
+::: {.column width="45%"}
+
+<div style="font-size: 0.72em; line-height: 1.35; margin-top: 40px;">
+
+<strong>Counties Included</strong>
+
+<ol> <li>Escambia</li> <li>Santa Rosa</li> <li>Okaloosa</li> <li>Walton</li> <li>Holmes</li> <li>Washington</li> <li>Bay</li> <li>Jackson</li> <li>Calhoun</li> <li>Gulf</li> <li>Franklin</li> <li>Liberty</li> <li>Gadsden</li> <li>Leon</li> <li>Wakulla</li> <li>Jefferson</li> </ol> </div>
+
+:::
+
+:::
 
 
 # Analysis and Results {.center}
