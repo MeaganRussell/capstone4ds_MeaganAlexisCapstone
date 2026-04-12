@@ -1,5 +1,5 @@
 ---
-title: "Predicting Flood Damage of Northwest Florida Counties using Random Forest Regression Modeling - Spring 2026"
+title: "Predicting Flood Damage of Northwest Florida Counties using Random Forest Regression Modeling"
 author: "Meagan Russell and Alexis Bjornstad (Advisor: Dr. Cohen)"
 date: last-modified
 
@@ -56,19 +56,14 @@ editor:
     wrap: 72
 
 ---
-<!--
 
-This is for me later, once the slides are ready to go.
-
-Slides: [slides.html](slides.html){target="_blank"} ( Go to `slides.qmd`
-to edit)
--->
+[Presentation Slides](https://meaganrussell.github.io/capstone4ds_MeaganAlexisCapstone/slides.html)
 
 ## Introduction
 
 Flooding is caused by many mechanisms, including when heavy rainfall causes rivers to overflow, when impervious surfaces reduce water infiltration, and/or when soil becomes oversaturated (@Javadinejad2022; @Lecce2000FloodTiming). Flash floods are considered to be one of the most severe natural disasters due to their rapid onset, unpredictability, infrastructure damage, and associated fatalities (@Diakakis2020; @Sadkou2024FlashFloods). Infrastructure and agricultural damage costs have steadily increased in the twentieth century (@Saharia2017). According to the IPCC, the severity and frequency of flood-causing severe storms will likely increase due to climate change (@IPCC2021Chapter11; @Halsnaes2023FloodModels). Due to Northwest Florida’s location relative to the Gulf of Mexico and major hurricane paths, most flooding research has focused on sea-level rise and coastal flooding, leaving inland flood risk understudied (@Bilskie2014Dynamics; @Morss2024Storm). Floods are extremely important to keep track of as they prove to contribute to human deaths, property damage, ecosystem changes, and social-economic losses (@Chen2020FloodSusceptibility). Growing evidence of machine learning models' capabilities to accurately predict storm severity and susceptibility highlights a major opportunity to apply these models to Northwest Florida (@Gensini2021SevereML; @Akshay2021FloodSeverity; @Chen2022RandomForestGeo).
 
-Random Forest (RF) is a type of machine learning algorithm that predicts the dependent variable based on independent variables (@Salman2024RandomForest). RF is a smart model that uses simple models, aka decision trees (@Salman2024RandomForest). Errors produced by the random forest training can be counteracted by increasing the number of samples and trees of classification (@Wang2015FloodRF). Additionally, each decision tree’s selection of data is random, which prevents the model from memorizing the data (@Salman2024RandomForest). The RF application allowed for the importance of each variable to be assessed, and each index contribution to the overall risk was calculated pertaining to the relevant study of interest in China (@Wang2015FloodRF). The RF technique is optimal for performing hydrological studies due to the ability of the machine learning model to map flood risk analysis for hazard assessment with a low-cost application of the non-traditional model compared to rainfall-runoff models (@Zhu2022FloodRF). For instance,  a machine learning study in 2024 using 16 flood risk factors (FRFs), including historic flood damage locations, found that several high and very high flood risk areas closely overlapped with FEMA’s 100-year floodplain in Tampa Bay (@Dey2024). In another hydrological study, RF was able to reproduce the characteristics of the studied flood events and represented the daily flood discharge well in comparison with the hydromad modeling (@Schoppa2020RFDischarge). As research progresses, it is noted that identifying key driving factors and validating them via machine learning is a key driver in precision flood prediction (@Tan2024FlashFloodDrivers).
+Random Forest (RF) is a type of machine learning algorithm that predicts the dependent variable based on independent variables (@Salman2024RandomForest). RF is a smart model that uses simple models, aka decision trees (@Salman2024RandomForest). Errors produced by the random forest training can be counteracted by increasing the number of samples and trees of classification (@Wang2015FloodRF). Additionally, each decision tree’s selection of data is random, which prevents the model from memorizing the data (@Salman2024RandomForest). The RF application allowed for the importance of each variable to be assessed, and each index contribution to the overall risk was calculated pertaining to the relevant study of interest in China (@Wang2015FloodRF). The RF technique is optimal for performing hydrological studies due to the ability of the machine learning model to map flood risk analysis for hazard assessment with a low-cost application of the non-traditional model compared to rainfall-runoff models (@Zhu2022FloodRF). For instance,  a machine learning study in 2024 using 16 flood risk factors (FRFs), including historic flood damage locations, found that several high and very high flood risk areas closely overlapped with FEMA’s 100-year floodplain in Tampa Bay (@Dey2024). In another hydrological study, RF was able to reproduce the characteristics of the studied flood events and represented. the daily flood discharge well in comparison with the hydromad modeling (@Schoppa2020RFDischarge). As research progresses, it is noted that identifying key driving factors and validating them via machine learning is a key driver in precision flood prediction (@Tan2024FlashFloodDrivers).
 
 Northwest Florida, often referred to as the Florida Panhandle, is home to 16 counties: Escambia, Santa Rosa, Okaloosa, Walton, Holmes, Washington, Bay, Jackson, Calhoun, Gulf, Liberty, Franklin, Gadsden, Leon, Wakulla, and Jefferson. Since January 1996, these counties have had 1,052 floods, 790 of which were flash floods and 262 non-flash floods. Flooding has resulted in approximately $656 million in property damage throughout the counties, with Escambia County ranking number one in damage with approximately $152 million since 1996 (@NOAAStormEvents). This study will be utilizing RF to predict flood damage in Northwest Florida based on housing units, population, median home value, flood type (flash flood vs. flood), precipitation (1-day, 3-day, and 7-day cumulative amounts), and county. This type of RF modeling has not been used at a county level in Northwest Florida and most flooding research is focused on coastal flooding due to the counties being in major hurricane paths. This is important because floods are not uniform for every county and mitigation planning is an important part of preparing for natural hazards. 
 
@@ -155,7 +150,7 @@ $$
 
 * Slower to acquire observations for best decision making
 * Bound by the lowest and highest observations (no extrapolate)
-* Difficult to interpret the decisions of ‘best features’ seen with trees## Data and Visualization
+* Difficult to interpret the decisions of ‘best features’ seen with trees
 
 ## Analysis and Results
 
@@ -240,7 +235,7 @@ Once all data sources spreadsheets were cleaned up they were merged into one spr
 
 ### Data Visualization
 
-According to the data collected from NOAA, Northwest Florida expereienced 1,203 flooding events between January 1, 2000 and December 31, 2025. Flooding event distribution is represented in @fig-flood-event-pie. Of the flooding events, 77.1% are categorized as flash floods and 22.9% are categorized as floods. This data indicates that Northwest Florida counties experience short-duration, high-intensity rainfall events more often then long-duration rainfall events.
+According to the data collected from NOAA, Northwest Florida experienced 1,203 flooding events between January 1, 2000 and December 31, 2025. Flooding event distribution is represented in @fig-flood-event-pie. Of the flooding events, 77.1% are categorized as flash floods and 22.9% are categorized as floods. This data indicates that Northwest Florida counties experience short-duration, high-intensity rainfall events more often then long-duration rainfall events.
 
 ```{r}
 #| label: fig-flood-event-pie
@@ -275,7 +270,7 @@ ggplot(floodcountall, aes(x = "", y = percent, fill = EVENT_TYPE)) +
   scale_fill_manual(values = c("Flash Flood" = "blue2", "Flood" = "chartreuse3")) +
   theme_void()
 ```
-Further breaking down the dataset, @fig-flood-events-county illustrates the number of flash flood and flood events by county. Bay County experiences the highest number of flooding events, with over 150 flash floods and approximately 30 flood events recorded between January 1, 2000 and December 31, 2025. In contrast, Liberty County experienced the fewest flood events, with fewer than 25 flash floods and fewer than 10 flood events during the same time period. This pattern is likely influence by the each county's geographic profile. Bay County has 708 square miles of water while Liberty County has only 7.6 square miles of water (@ACS2024).  
+Further breaking down the dataset, @fig-flood-events-county illustrates the number of flash flood and flood events by county. Bay County experiences the highest number of flooding events, with over 150 flash floods and approximately 30 flood events recorded between January 1, 2000 and December 31, 2025. In contrast, Liberty County experienced the fewest flood events, with fewer than 25 flash floods and fewer than 10 flood events during the same time period. This pattern is likely influenced by the each county's geographic profile. Bay County has 708 square miles of water while Liberty County has only 7.6 square miles of water (@ACS2024).  
 
 ```{r}
 #| label: fig-flood-events-county
@@ -389,7 +384,7 @@ ggplot(yearly_data, aes(x = year)) +
   labs(x = "Year") +
   theme_minimal(base_size = 14)
 ```
-@tbl-census-nwfl presents the demographic variable totals obatined from the [American Community Survey 5-year estimates](https://data.census.gov/). The table includes the population size, number of housing units, and the median home values for each of the 16 Northwest Florida counties from the 2024 survey.
+@tbl-census-nwfl presents the demographic variable totals obtained from the [American Community Survey 5-year estimates](https://data.census.gov/). The table includes the population size, number of housing units, and the median home values for each of the 16 Northwest Florida counties from the 2024 survey.
 
 ```{r}
 #| label: tbl-census-nwfl
@@ -434,9 +429,9 @@ census_data %>%
   )
 ```
 
-Accurate representation of property damage is the essential to creating an accurate and usable model. Due to inflation, property damage values from 20 years ago is not an accurate representation of present day dollars. To improve accuraces,the NOAA data utilized for the model was reduced to the past six years, starting in January 2020. The sample size in this data range was large enough for the Random Forest Model, while portraying meaningful property damage amounts. 
+Accurate representation of property damage is essential to creating an accurate and usable model. Due to inflation, property damage values from 20 years ago is not an accurate representation of present day dollars. To improve accuracy, the NOAA data utilized for the model was reduced to the past six years, starting in January 2020. The sample size in this data range was large enough for the Random Forest Model, while portraying meaningful property damage amounts. 
 
-To strengthen the model, rainfall data was collected from the [Global Historical Climatology Network Daily (GHCN-Daily)](https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily). Every county with the expection of Calhoun County, had precipitation gauges. For Calhoun County, precipitation data was collected from the four souronding counties (Bay,  Gulf, Jackson, and Libery Counties) and averaged per day. @fig-monthly-rainfall-county illustrates the monthly average rainfall per county in Northwest Florida.
+To strengthen the model, rainfall data was collected from the [Global Historical Climatology Network Daily (GHCN-Daily)](https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily). Every county with the exception of Calhoun County had precipitation gauges. For Calhoun County, precipitation data was collected from the four surrounding counties (Bay,  Gulf, Jackson, and Liberty Counties) and averaged per day. @fig-monthly-rainfall-county illustrates the monthly average rainfall per county in Northwest Florida.
 
 ```{r}
 #| label: fig-monthly-rainfall-county
@@ -508,7 +503,7 @@ ggplot(monthly_floods, aes(x = month, y = avg_events)) +
   theme_minimal()+
    theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
-In order to verify this theory, rainfall daily maximums were calcualted per month (@fig-max-daily-rainfall). This figures shows that rainfall daily maximums are highest in September, suggesting that September experiences high-intesntiy but less frequent rainfall events which may contribute to more frequent flooding events. 
+In order to verify this theory, rainfall daily maximums were calculated per month (@fig-max-daily-rainfall). This figure shows that rainfall daily maximums are highest in September, suggesting that September experiences high-intensity but less frequent rainfall events which may contribute to more frequent flooding events. 
 ```{r}
 #| label: fig-max-daily-rainfall
 #| fig-cap: "Maximum Daily Rainfall by Month"
@@ -1243,3 +1238,17 @@ ggplot(county_damage_rank_top,
   ) +
   theme_minimal()
 ```
+## Discusssion
+
+The results of this study showed that the random forest model had a limited ability to predict flood damage, as demonstrated by the low R² values across each model. This suggests that flood damage is influenced by factors not included in this study. Previous research on flood susceptibility using random forest has utilized variables such as elevation, slope, aspect, distance to streams, distance to rivers, distance to roads, land cover, topographic wetness index, stream power index, and plan and profile curvature. These studies found that elevation, slope, and proximity to rivers and streams were the primary controlling factors influencing flood susceptibility (@wahba2024flood).
+
+The limitations to this study were the number and type of variables utilized, which shows the complexity of flooding. Floods don't only occur due to heavy rainfall, but are also influenced by geophysical factors. 
+
+This study highlights the need for further research in this area and suggests that the inclusion of additional variables is critical for improving the prediction of flood damage.
+
+## Conclusion
+
+The random forest model is a machine learning method that is useful for classifying information and predicting outcomes. When applied to the flood damage study set, the random forest algorithm was unable to capture the total damage using multiple variables over four model types. Our best model type was transformed to include 1-day prior rainfall, population, housing units, and median home value, and continued to exclude zero-damage events. The focus on the short-term rainfall occurrences was used to inform damage predictions due to the random forest modeling type. The random forest model handles short-term predictions well due to the model handling noise and non-stationary features of datasets. 
+In conclusion, the model improvements indicated the importance value of certain flooding variables within the model's prediction. The factors of importance included removing zero damage flooding events to improve damage accuracy, mitigating noise factors that were introduced to the model, and simplifying predictive analysis to a short-term focus type (1 day rainfall). 
+
+The finalized model experienced limited capabilities of predicting flood damage estimations. However, a comparative analysis of our original analyzed model one versus our finalized model four revealed the improvement in actual vs. predicted values. The study revealed high damage counties in Northwest Florida, the top five in order being: Washington, Walton, Liberty, Calhoun, and Leon County. The top five counties of average predicted damage ranged in value, from the lowest prediction being <$500,000 in damage and the highest prediction totaling >$4,000,000 dollars in damages.

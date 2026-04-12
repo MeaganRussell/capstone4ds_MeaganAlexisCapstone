@@ -12,6 +12,8 @@ format:
     css: styles.css
     embed-resources: true
 editor: visual
+bibliography: references.bib
+csl: https://www.zotero.org/styles/apa
 ---
 
 
@@ -49,11 +51,11 @@ Research Focus and Goal:
 
 ::: {.column width="50%"}
 
-![](Flood.jpg){width=100% height=180px}
+![](Flood.jpg){width=100% height=180px style="margin-top:-10px;"}
 
-![](Flood2.jpg){width=100% height=180px}
+![](Flood2.jpg){width=100% height=180px style="margin-top:-10px;"}
 
-![](Flood3.jpg){width=100% height=180px}
+![](Flood3.jpg){width=100% height=180px style="margin-top:-10px;"}
 
 :::
 
@@ -110,41 +112,44 @@ Random forest is a flexible, buildable, and straightforward machine learning met
 
 ```{dot}
 //| label: fig-random-forest
-//| fig-cap: "Conceptual representation of the random forest algorithm"
+//| fig-cap: "Conceptual example of a random forest model showing multiple decision trees contributing to a final prediction."
 //| fig-width: 8
-//| out-width: 100%
+//| out-width: 85%
 //| fig-align: center
+//| fig-show: hold
+
 digraph random_forest_example {
-  graph [layout = dot, rankdir = TB, compound = true]
-  node [shape = box, style = filled, fillcolor = chartreuse3, fontname = Helvetica]
-  
-  final [shape = ellipse, label = "Final Prediction\n(Average of Trees)"]
+  graph [layout=dot, rankdir=TB, nodesep=0.4, ranksep=0.6]
+  node [shape=box, style=filled, fillcolor=chartreuse3, fontname=Helvetica]
+  edge [fontname=Helvetica]
+
+  final [shape=ellipse, label="Final Prediction\n(Average of Trees)"]
 
   subgraph cluster_1 {
-    label = "Tree 1"
-    t1a [label = "Rainfall > 3 in?"]
-    t1d [label = "High Damage"]
-    t1e [label = "Low Damage"]
-    t1a -> t1d [label = "Yes"]
-    t1a -> t1e [label = "No"]
+    label="Tree 1"
+    t1a [label="Rainfall > 3 in?"]
+    t1d [label="High Damage"]
+    t1e [label="Low Damage"]
+    t1a -> t1d [label="Yes"]
+    t1a -> t1e [label="No"]
   }
-  
+
   subgraph cluster_2 {
-    label = "Tree 2"
-    t2a [label = "Flood Type = Flash Flood?"]
-    t2d [label = "High Damage"]
-    t2e [label = "Moderate Damage"]
-    t2a -> t2d [label = "Yes"]
-    t2a -> t2e [label = "No"]
+    label="Tree 2"
+    t2a [label="Flash Flood?"]
+    t2d [label="High Damage"]
+    t2e [label="Moderate Damage"]
+    t2a -> t2d [label="Yes"]
+    t2a -> t2e [label="No"]
   }
 
   subgraph cluster_3 {
-    label = "Tree 3"
-    t3a [label = "Housing Units > 50,000?"]
-    t3d [label = "Moderate Damage"]
-    t3e [label = "Low Damage"]
-    t3a -> t3d [label = "Yes"]
-    t3a -> t3e [label = "No"]
+    label="Tree 3"
+    t3a [label="Housing Units > 50k?"]
+    t3d [label="Moderate Damage"]
+    t3e [label="Low Damage"]
+    t3a -> t3d [label="Yes"]
+    t3a -> t3e [label="No"]
   }
 
   t1d -> final
@@ -155,6 +160,8 @@ digraph random_forest_example {
   t3e -> final
 }
 ```
+
+Figure 1. Conceptual example of a random forest model showing multiple decision trees contributing to a final prediction.
 
 ## Features
 
@@ -565,36 +572,6 @@ ggplot(monthly_floods, aes(x = month, y = avg_events)) +
   labs(
     x = "Month",
     y = "Average Flood Events per Year"
-  ) +
-  theme_minimal()+
-   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
-```{r}
-#| label: fig-max-daily-rainfall
-#| fig-cap: "Maximum Daily Rainfall by Month"
-#| fig-align: center
-
-library(readr)
-library(dplyr)
-library(lubridate)
-library(ggplot2)
-
-rain_intensity <- prec %>%
-  filter(!is.na(DATE), !is.na(PRCP)) %>%
-  mutate(
-    month = month(DATE, label = TRUE, abbr = FALSE)
-  ) %>%
-  group_by(month) %>%
-  summarise(
-    max_rain = max(PRCP),
-    .groups = "drop"
-  )
-
-ggplot(rain_intensity, aes(x = month, y = max_rain)) +
-  geom_col(fill = "blue3") +
-  labs(
-    x = "Month",
-    y = "Maximum Daily Rainfall (inches)"
   ) +
   theme_minimal()+
    theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -1275,6 +1252,67 @@ ggplot(county_damage_rank_top,
 ```
 
 ## Discussion
+
+- Random forest showed limited ability to predict flood damage (low R²)  
+- Flood damage likely influenced by missing variables  
+- Prior studies show elevation, slope, and proximity to rivers/streams are key factors 
+
+- Limitations: limited variables; flooding influenced by geophysical factors  
+
+- Future: additional variables needed to improve prediction  
+
 ## Conclusion
+
+- Random forest showed **limited ability** to predict flood damage  
+
+- Best model:
+  - 1-day rainfall + population + housing + home value  
+  - excluded zero-damage events  
+
+- Improvements:
+  - reduced noise  
+  - better actual vs predicted values  
+
+- Highest damage counties:
+  - Washington, Walton, Liberty, Calhoun, Leon  
+  
+---
+nocite: |
+  @Javadinejad2022
+  @Diakakis2020
+  @Saharia2017
+  @IPCC2021Chapter11
+  @Bilskie2014Dynamics
+  @Halsnaes2023FloodModels
+  @Sadkou2024FlashFloods
+  @Morss2024Storm
+  @Gensini2021SevereML
+  @Akshay2021FloodSeverity
+  @Chen2022RandomForestGeo
+  @Zhu2022FloodRF
+  @Schoppa2020RFDischarge
+  @Wang2015FloodRF
+  @Salman2024RandomForest
+  @Sadkou2024FlashFlood
+  @Dey2024
+  @Chang2023FlashFloodFatality
+  @Lecce2000FloodTiming
+  @Chen2020FloodSusceptibility
+  @Tan2024FlashFloodDrivers
+  @NOAAStormEvents
+  @Dutta2023COVIDML
+  @Rigatti2017RandomForest
+  @hodson2021mean
+  @Speiser2019RandomForest
+  @Haddouchi2019RandomForest
+  @ACS2024
+  @wahba2024flood
+---
+
 ## References
-# Questions?
+
+::: {#refs}
+:::
+
+# Questions? {.center}
+

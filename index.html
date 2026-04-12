@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Meagan Russell and Alexis Bjornstad (Advisor: Dr. Cohen)">
-<meta name="dcterms.date" content="2026-04-04">
+<meta name="dcterms.date" content="2026-04-12">
 
-<title>Predicting Flood Damage of Northwest Florida Counties using Random Forest Regression Modeling - Spring 2026</title>
+<title>Predicting Flood Damage of Northwest Florida Counties using Random Forest Regression Modeling</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -3232,7 +3232,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Predicting Flood Damage of Northwest Florida Counties using Random Forest Regression Modeling - Spring 2026</h1>
+<h1 class="title">Predicting Flood Damage of Northwest Florida Counties using Random Forest Regression Modeling</h1>
 </div>
 
 
@@ -3249,7 +3249,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 4, 2026</p>
+      <p class="date">April 12, 2026</p>
     </div>
   </div>
   
@@ -3261,17 +3261,11 @@ window.Quarto = {
 </header>
 
 
-<!--
-
-This is for me later, once the slides are ready to go.
-
-Slides: [slides.html](slides.html){target="_blank"} ( Go to `slides.qmd`
-to edit)
--->
+<p><a href="https://meaganrussell.github.io/capstone4ds_MeaganAlexisCapstone/slides.html">Presentation Slides</a></p>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>Flooding is caused by many mechanisms, including when heavy rainfall causes rivers to overflow, when impervious surfaces reduce water infiltration, and/or when soil becomes oversaturated (<span class="citation" data-cites="Javadinejad2022">Javadinejad (<a href="#ref-Javadinejad2022" role="doc-biblioref">2022</a>)</span>; <span class="citation" data-cites="Lecce2000FloodTiming">Lecce (<a href="#ref-Lecce2000FloodTiming" role="doc-biblioref">2000</a>)</span>). Flash floods are considered to be one of the most severe natural disasters due to their rapid onset, unpredictability, infrastructure damage, and associated fatalities (<span class="citation" data-cites="Diakakis2020">Diakakis et al. (<a href="#ref-Diakakis2020" role="doc-biblioref">2020</a>)</span>; <span class="citation" data-cites="Sadkou2024FlashFloods">Sadkou et al. (<a href="#ref-Sadkou2024FlashFloods" role="doc-biblioref">2024</a>)</span>). Infrastructure and agricultural damage costs have steadily increased in the twentieth century (<span class="citation" data-cites="Saharia2017">Saharia et al. (<a href="#ref-Saharia2017" role="doc-biblioref">2017</a>)</span>). According to the IPCC, the severity and frequency of flood-causing severe storms will likely increase due to climate change (<span class="citation" data-cites="IPCC2021Chapter11">Intergovernmental Panel on Climate Change (<a href="#ref-IPCC2021Chapter11" role="doc-biblioref">2021</a>)</span>; <span class="citation" data-cites="Halsnaes2023FloodModels">Halsnæs et al. (<a href="#ref-Halsnaes2023FloodModels" role="doc-biblioref">2023</a>)</span>). Due to Northwest Florida’s location relative to the Gulf of Mexico and major hurricane paths, most flooding research has focused on sea-level rise and coastal flooding, leaving inland flood risk understudied (<span class="citation" data-cites="Bilskie2014Dynamics">Bilskie et al. (<a href="#ref-Bilskie2014Dynamics" role="doc-biblioref">2014</a>)</span>; <span class="citation" data-cites="Morss2024Storm">Morss et al. (<a href="#ref-Morss2024Storm" role="doc-biblioref">2024</a>)</span>). Floods are extremely important to keep track of as they prove to contribute to human deaths, property damage, ecosystem changes, and social-economic losses (<span class="citation" data-cites="Chen2020FloodSusceptibility">W. Chen et al. (<a href="#ref-Chen2020FloodSusceptibility" role="doc-biblioref">2020</a>)</span>). Growing evidence of machine learning models’ capabilities to accurately predict storm severity and susceptibility highlights a major opportunity to apply these models to Northwest Florida (<span class="citation" data-cites="Gensini2021SevereML">Gensini et al. (<a href="#ref-Gensini2021SevereML" role="doc-biblioref">2021</a>)</span>; <span class="citation" data-cites="Akshay2021FloodSeverity">Akshay et al. (<a href="#ref-Akshay2021FloodSeverity" role="doc-biblioref">2021</a>)</span>; <span class="citation" data-cites="Chen2022RandomForestGeo">Z. Chen et al. (<a href="#ref-Chen2022RandomForestGeo" role="doc-biblioref">2022</a>)</span>).</p>
-<p>Random Forest (RF) is a type of machine learning algorithm that predicts the dependent variable based on independent variables (<span class="citation" data-cites="Salman2024RandomForest">Salman, Kalakech, and Steiti (<a href="#ref-Salman2024RandomForest" role="doc-biblioref">2024</a>)</span>). RF is a smart model that uses simple models, aka decision trees (<span class="citation" data-cites="Salman2024RandomForest">Salman, Kalakech, and Steiti (<a href="#ref-Salman2024RandomForest" role="doc-biblioref">2024</a>)</span>). Errors produced by the random forest training can be counteracted by increasing the number of samples and trees of classification (<span class="citation" data-cites="Wang2015FloodRF">Wang et al. (<a href="#ref-Wang2015FloodRF" role="doc-biblioref">2015</a>)</span>). Additionally, each decision tree’s selection of data is random, which prevents the model from memorizing the data (<span class="citation" data-cites="Salman2024RandomForest">Salman, Kalakech, and Steiti (<a href="#ref-Salman2024RandomForest" role="doc-biblioref">2024</a>)</span>). The RF application allowed for the importance of each variable to be assessed, and each index contribution to the overall risk was calculated pertaining to the relevant study of interest in China (<span class="citation" data-cites="Wang2015FloodRF">Wang et al. (<a href="#ref-Wang2015FloodRF" role="doc-biblioref">2015</a>)</span>). The RF technique is optimal for performing hydrological studies due to the ability of the machine learning model to map flood risk analysis for hazard assessment with a low-cost application of the non-traditional model compared to rainfall-runoff models (<span class="citation" data-cites="Zhu2022FloodRF">Zhu and Zhang (<a href="#ref-Zhu2022FloodRF" role="doc-biblioref">2022</a>)</span>). For instance, a machine learning study in 2024 using 16 flood risk factors (FRFs), including historic flood damage locations, found that several high and very high flood risk areas closely overlapped with FEMA’s 100-year floodplain in Tampa Bay (<span class="citation" data-cites="Dey2024">Dey et al. (<a href="#ref-Dey2024" role="doc-biblioref">2024</a>)</span>). In another hydrological study, RF was able to reproduce the characteristics of the studied flood events and represented the daily flood discharge well in comparison with the hydromad modeling (<span class="citation" data-cites="Schoppa2020RFDischarge">Schoppa, Disse, and Bachmair (<a href="#ref-Schoppa2020RFDischarge" role="doc-biblioref">2020</a>)</span>). As research progresses, it is noted that identifying key driving factors and validating them via machine learning is a key driver in precision flood prediction (<span class="citation" data-cites="Tan2024FlashFloodDrivers">Tan et al. (<a href="#ref-Tan2024FlashFloodDrivers" role="doc-biblioref">2024</a>)</span>).</p>
+<p>Random Forest (RF) is a type of machine learning algorithm that predicts the dependent variable based on independent variables (<span class="citation" data-cites="Salman2024RandomForest">Salman, Kalakech, and Steiti (<a href="#ref-Salman2024RandomForest" role="doc-biblioref">2024</a>)</span>). RF is a smart model that uses simple models, aka decision trees (<span class="citation" data-cites="Salman2024RandomForest">Salman, Kalakech, and Steiti (<a href="#ref-Salman2024RandomForest" role="doc-biblioref">2024</a>)</span>). Errors produced by the random forest training can be counteracted by increasing the number of samples and trees of classification (<span class="citation" data-cites="Wang2015FloodRF">Wang et al. (<a href="#ref-Wang2015FloodRF" role="doc-biblioref">2015</a>)</span>). Additionally, each decision tree’s selection of data is random, which prevents the model from memorizing the data (<span class="citation" data-cites="Salman2024RandomForest">Salman, Kalakech, and Steiti (<a href="#ref-Salman2024RandomForest" role="doc-biblioref">2024</a>)</span>). The RF application allowed for the importance of each variable to be assessed, and each index contribution to the overall risk was calculated pertaining to the relevant study of interest in China (<span class="citation" data-cites="Wang2015FloodRF">Wang et al. (<a href="#ref-Wang2015FloodRF" role="doc-biblioref">2015</a>)</span>). The RF technique is optimal for performing hydrological studies due to the ability of the machine learning model to map flood risk analysis for hazard assessment with a low-cost application of the non-traditional model compared to rainfall-runoff models (<span class="citation" data-cites="Zhu2022FloodRF">Zhu and Zhang (<a href="#ref-Zhu2022FloodRF" role="doc-biblioref">2022</a>)</span>). For instance, a machine learning study in 2024 using 16 flood risk factors (FRFs), including historic flood damage locations, found that several high and very high flood risk areas closely overlapped with FEMA’s 100-year floodplain in Tampa Bay (<span class="citation" data-cites="Dey2024">Dey et al. (<a href="#ref-Dey2024" role="doc-biblioref">2024</a>)</span>). In another hydrological study, RF was able to reproduce the characteristics of the studied flood events and represented. the daily flood discharge well in comparison with the hydromad modeling (<span class="citation" data-cites="Schoppa2020RFDischarge">Schoppa, Disse, and Bachmair (<a href="#ref-Schoppa2020RFDischarge" role="doc-biblioref">2020</a>)</span>). As research progresses, it is noted that identifying key driving factors and validating them via machine learning is a key driver in precision flood prediction (<span class="citation" data-cites="Tan2024FlashFloodDrivers">Tan et al. (<a href="#ref-Tan2024FlashFloodDrivers" role="doc-biblioref">2024</a>)</span>).</p>
 <p>Northwest Florida, often referred to as the Florida Panhandle, is home to 16 counties: Escambia, Santa Rosa, Okaloosa, Walton, Holmes, Washington, Bay, Jackson, Calhoun, Gulf, Liberty, Franklin, Gadsden, Leon, Wakulla, and Jefferson. Since January 1996, these counties have had 1,052 floods, 790 of which were flash floods and 262 non-flash floods. Flooding has resulted in approximately $656 million in property damage throughout the counties, with Escambia County ranking number one in damage with approximately $152 million since 1996 (<span class="citation" data-cites="NOAAStormEvents">National Oceanic and Atmospheric Administration (<a href="#ref-NOAAStormEvents" role="doc-biblioref">2024</a>)</span>). This study will be utilizing RF to predict flood damage in Northwest Florida based on housing units, population, median home value, flood type (flash flood vs. flood), precipitation (1-day, 3-day, and 7-day cumulative amounts), and county. This type of RF modeling has not been used at a county level in Northwest Florida and most flooding research is focused on coastal flooding due to the counties being in major hurricane paths. This is important because floods are not uniform for every county and mitigation planning is an important part of preparing for natural hazards.</p>
 </section>
 <section id="methods" class="level2">
@@ -3485,7 +3479,7 @@ MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
 <ul>
 <li>Slower to acquire observations for best decision making</li>
 <li>Bound by the lowest and highest observations (no extrapolate)</li>
-<li>Difficult to interpret the decisions of ‘best features’ seen with trees## Data and Visualization</li>
+<li>Difficult to interpret the decisions of ‘best features’ seen with trees</li>
 </ul>
 </section>
 </section>
@@ -3502,20 +3496,20 @@ Table 1. Variables Used in Random Forest Model
 </figcaption>
 <div aria-describedby="tbl-table-one-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="nliqusnizo" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#nliqusnizo table {
+<div id="ptlutcxuih" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ptlutcxuih table {
 font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
 }
-#nliqusnizo thead, #nliqusnizo tbody, #nliqusnizo tfoot, #nliqusnizo tr, #nliqusnizo td, #nliqusnizo th {
+#ptlutcxuih thead, #ptlutcxuih tbody, #ptlutcxuih tfoot, #ptlutcxuih tr, #ptlutcxuih td, #ptlutcxuih th {
 border-style: none;
 }
-#nliqusnizo p {
+#ptlutcxuih p {
 margin: 0;
 padding: 0;
 }
-#nliqusnizo .gt_table {
+#ptlutcxuih .gt_table {
 display: table;
 border-collapse: collapse;
 line-height: normal;
@@ -3540,11 +3534,11 @@ border-left-style: none;
 border-left-width: 2px;
 border-left-color: #D3D3D3;
 }
-#nliqusnizo .gt_caption {
+#ptlutcxuih .gt_caption {
 padding-top: 4px;
 padding-bottom: 4px;
 }
-#nliqusnizo .gt_title {
+#ptlutcxuih .gt_title {
 color: #333333;
 font-size: 125%;
 font-weight: initial;
@@ -3555,7 +3549,7 @@ padding-right: 5px;
 border-bottom-color: #FFFFFF;
 border-bottom-width: 0;
 }
-#nliqusnizo .gt_subtitle {
+#ptlutcxuih .gt_subtitle {
 color: #333333;
 font-size: 85%;
 font-weight: initial;
@@ -3566,7 +3560,7 @@ padding-right: 5px;
 border-top-color: #FFFFFF;
 border-top-width: 0;
 }
-#nliqusnizo .gt_heading {
+#ptlutcxuih .gt_heading {
 background-color: #FFFFFF;
 text-align: center;
 border-bottom-color: #FFFFFF;
@@ -3577,12 +3571,12 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#nliqusnizo .gt_bottom_border {
+#ptlutcxuih .gt_bottom_border {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#nliqusnizo .gt_col_headings {
+#ptlutcxuih .gt_col_headings {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -3596,7 +3590,7 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#nliqusnizo .gt_col_heading {
+#ptlutcxuih .gt_col_heading {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -3615,7 +3609,7 @@ padding-left: 5px;
 padding-right: 5px;
 overflow-x: hidden;
 }
-#nliqusnizo .gt_column_spanner_outer {
+#ptlutcxuih .gt_column_spanner_outer {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -3626,13 +3620,13 @@ padding-bottom: 0;
 padding-left: 4px;
 padding-right: 4px;
 }
-#nliqusnizo .gt_column_spanner_outer:first-child {
+#ptlutcxuih .gt_column_spanner_outer:first-child {
 padding-left: 0;
 }
-#nliqusnizo .gt_column_spanner_outer:last-child {
+#ptlutcxuih .gt_column_spanner_outer:last-child {
 padding-right: 0;
 }
-#nliqusnizo .gt_column_spanner {
+#ptlutcxuih .gt_column_spanner {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
@@ -3643,10 +3637,10 @@ overflow-x: hidden;
 display: inline-block;
 width: 100%;
 }
-#nliqusnizo .gt_spanner_row {
+#ptlutcxuih .gt_spanner_row {
 border-bottom-style: hidden;
 }
-#nliqusnizo .gt_group_heading {
+#ptlutcxuih .gt_group_heading {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3671,7 +3665,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 text-align: left;
 }
-#nliqusnizo .gt_empty_group_heading {
+#ptlutcxuih .gt_empty_group_heading {
 padding: 0.5px;
 color: #333333;
 background-color: #FFFFFF;
@@ -3685,13 +3679,13 @@ border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 vertical-align: middle;
 }
-#nliqusnizo .gt_from_md > :first-child {
+#ptlutcxuih .gt_from_md > :first-child {
 margin-top: 0;
 }
-#nliqusnizo .gt_from_md > :last-child {
+#ptlutcxuih .gt_from_md > :last-child {
 margin-bottom: 0;
 }
-#nliqusnizo .gt_row {
+#ptlutcxuih .gt_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3709,7 +3703,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 overflow-x: hidden;
 }
-#nliqusnizo .gt_stub {
+#ptlutcxuih .gt_stub {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -3721,7 +3715,7 @@ border-right-color: #D3D3D3;
 padding-left: 5px;
 padding-right: 5px;
 }
-#nliqusnizo .gt_stub_row_group {
+#ptlutcxuih .gt_stub_row_group {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -3734,13 +3728,13 @@ padding-left: 5px;
 padding-right: 5px;
 vertical-align: top;
 }
-#nliqusnizo .gt_row_group_first td {
+#ptlutcxuih .gt_row_group_first td {
 border-top-width: 2px;
 }
-#nliqusnizo .gt_row_group_first th {
+#ptlutcxuih .gt_row_group_first th {
 border-top-width: 2px;
 }
-#nliqusnizo .gt_summary_row {
+#ptlutcxuih .gt_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -3749,14 +3743,14 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#nliqusnizo .gt_first_summary_row {
+#ptlutcxuih .gt_first_summary_row {
 border-top-style: solid;
 border-top-color: #D3D3D3;
 }
-#nliqusnizo .gt_first_summary_row.thick {
+#ptlutcxuih .gt_first_summary_row.thick {
 border-top-width: 2px;
 }
-#nliqusnizo .gt_last_summary_row {
+#ptlutcxuih .gt_last_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3765,7 +3759,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#nliqusnizo .gt_grand_summary_row {
+#ptlutcxuih .gt_grand_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -3774,7 +3768,7 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#nliqusnizo .gt_first_grand_summary_row {
+#ptlutcxuih .gt_first_grand_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3783,7 +3777,7 @@ border-top-style: double;
 border-top-width: 6px;
 border-top-color: #D3D3D3;
 }
-#nliqusnizo .gt_last_grand_summary_row_top {
+#ptlutcxuih .gt_last_grand_summary_row_top {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -3792,10 +3786,10 @@ border-bottom-style: double;
 border-bottom-width: 6px;
 border-bottom-color: #D3D3D3;
 }
-#nliqusnizo .gt_striped {
+#ptlutcxuih .gt_striped {
 background-color: rgba(128, 128, 128, 0.05);
 }
-#nliqusnizo .gt_table_body {
+#ptlutcxuih .gt_table_body {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -3803,7 +3797,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#nliqusnizo .gt_footnotes {
+#ptlutcxuih .gt_footnotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -3816,7 +3810,7 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#nliqusnizo .gt_footnote {
+#ptlutcxuih .gt_footnote {
 margin: 0px;
 font-size: 90%;
 padding-top: 4px;
@@ -3824,7 +3818,7 @@ padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#nliqusnizo .gt_sourcenotes {
+#ptlutcxuih .gt_sourcenotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -3837,64 +3831,64 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#nliqusnizo .gt_sourcenote {
+#ptlutcxuih .gt_sourcenote {
 font-size: 90%;
 padding-top: 4px;
 padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#nliqusnizo .gt_left {
+#ptlutcxuih .gt_left {
 text-align: left;
 }
-#nliqusnizo .gt_center {
+#ptlutcxuih .gt_center {
 text-align: center;
 }
-#nliqusnizo .gt_right {
+#ptlutcxuih .gt_right {
 text-align: right;
 font-variant-numeric: tabular-nums;
 }
-#nliqusnizo .gt_font_normal {
+#ptlutcxuih .gt_font_normal {
 font-weight: normal;
 }
-#nliqusnizo .gt_font_bold {
+#ptlutcxuih .gt_font_bold {
 font-weight: bold;
 }
-#nliqusnizo .gt_font_italic {
+#ptlutcxuih .gt_font_italic {
 font-style: italic;
 }
-#nliqusnizo .gt_super {
+#ptlutcxuih .gt_super {
 font-size: 65%;
 }
-#nliqusnizo .gt_footnote_marks {
+#ptlutcxuih .gt_footnote_marks {
 font-size: 75%;
 vertical-align: 0.4em;
 position: initial;
 }
-#nliqusnizo .gt_asterisk {
+#ptlutcxuih .gt_asterisk {
 font-size: 100%;
 vertical-align: 0;
 }
-#nliqusnizo .gt_indent_1 {
+#ptlutcxuih .gt_indent_1 {
 text-indent: 5px;
 }
-#nliqusnizo .gt_indent_2 {
+#ptlutcxuih .gt_indent_2 {
 text-indent: 10px;
 }
-#nliqusnizo .gt_indent_3 {
+#ptlutcxuih .gt_indent_3 {
 text-indent: 15px;
 }
-#nliqusnizo .gt_indent_4 {
+#ptlutcxuih .gt_indent_4 {
 text-indent: 20px;
 }
-#nliqusnizo .gt_indent_5 {
+#ptlutcxuih .gt_indent_5 {
 text-indent: 25px;
 }
-#nliqusnizo .katex-display {
+#ptlutcxuih .katex-display {
 display: inline-flex !important;
 margin-bottom: 0.75em !important;
 }
-#nliqusnizo div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#ptlutcxuih div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
 height: 0px !important;
 }
 </style>
@@ -3988,7 +3982,7 @@ height: 0px !important;
 </section>
 <section id="data-visualization" class="level3">
 <h3 class="anchored" data-anchor-id="data-visualization">Data Visualization</h3>
-<p>According to the data collected from NOAA, Northwest Florida expereienced 1,203 flooding events between January 1, 2000 and December 31, 2025. Flooding event distribution is represented in <a href="#fig-flood-event-pie" class="quarto-xref">Figure 2</a>. Of the flooding events, 77.1% are categorized as flash floods and 22.9% are categorized as floods. This data indicates that Northwest Florida counties experience short-duration, high-intensity rainfall events more often then long-duration rainfall events.</p>
+<p>According to the data collected from NOAA, Northwest Florida experienced 1,203 flooding events between January 1, 2000 and December 31, 2025. Flooding event distribution is represented in <a href="#fig-flood-event-pie" class="quarto-xref">Figure 2</a>. Of the flooding events, 77.1% are categorized as flash floods and 22.9% are categorized as floods. This data indicates that Northwest Florida counties experience short-duration, high-intensity rainfall events more often then long-duration rainfall events.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-flood-event-pie" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
@@ -4003,7 +3997,7 @@ Figure 2. Flash Flood vs Flood Events (2000–Present)
 </div>
 </div>
 </div>
-<p>Further breaking down the dataset, <a href="#fig-flood-events-county" class="quarto-xref">Figure 3</a> illustrates the number of flash flood and flood events by county. Bay County experiences the highest number of flooding events, with over 150 flash floods and approximately 30 flood events recorded between January 1, 2000 and December 31, 2025. In contrast, Liberty County experienced the fewest flood events, with fewer than 25 flash floods and fewer than 10 flood events during the same time period. This pattern is likely influence by the each county’s geographic profile. Bay County has 708 square miles of water while Liberty County has only 7.6 square miles of water (<span class="citation" data-cites="ACS2024">U.S. Census Bureau (<a href="#ref-ACS2024" role="doc-biblioref">2024</a>)</span>).</p>
+<p>Further breaking down the dataset, <a href="#fig-flood-events-county" class="quarto-xref">Figure 3</a> illustrates the number of flash flood and flood events by county. Bay County experiences the highest number of flooding events, with over 150 flash floods and approximately 30 flood events recorded between January 1, 2000 and December 31, 2025. In contrast, Liberty County experienced the fewest flood events, with fewer than 25 flash floods and fewer than 10 flood events during the same time period. This pattern is likely influenced by the each county’s geographic profile. Bay County has 708 square miles of water while Liberty County has only 7.6 square miles of water (<span class="citation" data-cites="ACS2024">U.S. Census Bureau (<a href="#ref-ACS2024" role="doc-biblioref">2024</a>)</span>).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-flood-events-county" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
@@ -4033,7 +4027,7 @@ Figure 4. Flood Events and Property Damage Over Time
 </div>
 </div>
 </div>
-<p><a href="#tbl-census-nwfl" class="quarto-xref">Table 2</a> presents the demographic variable totals obatined from the <a href="https://data.census.gov/">American Community Survey 5-year estimates</a>. The table includes the population size, number of housing units, and the median home values for each of the 16 Northwest Florida counties from the 2024 survey.</p>
+<p><a href="#tbl-census-nwfl" class="quarto-xref">Table 2</a> presents the demographic variable totals obtained from the <a href="https://data.census.gov/">American Community Survey 5-year estimates</a>. The table includes the population size, number of housing units, and the median home values for each of the 16 Northwest Florida counties from the 2024 survey.</p>
 <div class="cell" data-tbl-align="center">
 <div id="tbl-census-nwfl" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-tbl-align="center">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -4042,20 +4036,20 @@ Table 2. Population, Housing Units, and Median Home Value by County
 </figcaption>
 <div aria-describedby="tbl-census-nwfl-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="rplkddadrm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#rplkddadrm table {
+<div id="lybnhlsdof" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#lybnhlsdof table {
 font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
 }
-#rplkddadrm thead, #rplkddadrm tbody, #rplkddadrm tfoot, #rplkddadrm tr, #rplkddadrm td, #rplkddadrm th {
+#lybnhlsdof thead, #lybnhlsdof tbody, #lybnhlsdof tfoot, #lybnhlsdof tr, #lybnhlsdof td, #lybnhlsdof th {
 border-style: none;
 }
-#rplkddadrm p {
+#lybnhlsdof p {
 margin: 0;
 padding: 0;
 }
-#rplkddadrm .gt_table {
+#lybnhlsdof .gt_table {
 display: table;
 border-collapse: collapse;
 line-height: normal;
@@ -4080,11 +4074,11 @@ border-left-style: none;
 border-left-width: 2px;
 border-left-color: #D3D3D3;
 }
-#rplkddadrm .gt_caption {
+#lybnhlsdof .gt_caption {
 padding-top: 4px;
 padding-bottom: 4px;
 }
-#rplkddadrm .gt_title {
+#lybnhlsdof .gt_title {
 color: #333333;
 font-size: 125%;
 font-weight: initial;
@@ -4095,7 +4089,7 @@ padding-right: 5px;
 border-bottom-color: #FFFFFF;
 border-bottom-width: 0;
 }
-#rplkddadrm .gt_subtitle {
+#lybnhlsdof .gt_subtitle {
 color: #333333;
 font-size: 85%;
 font-weight: initial;
@@ -4106,7 +4100,7 @@ padding-right: 5px;
 border-top-color: #FFFFFF;
 border-top-width: 0;
 }
-#rplkddadrm .gt_heading {
+#lybnhlsdof .gt_heading {
 background-color: #FFFFFF;
 text-align: center;
 border-bottom-color: #FFFFFF;
@@ -4117,12 +4111,12 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#rplkddadrm .gt_bottom_border {
+#lybnhlsdof .gt_bottom_border {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#rplkddadrm .gt_col_headings {
+#lybnhlsdof .gt_col_headings {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -4136,7 +4130,7 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#rplkddadrm .gt_col_heading {
+#lybnhlsdof .gt_col_heading {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -4155,7 +4149,7 @@ padding-left: 5px;
 padding-right: 5px;
 overflow-x: hidden;
 }
-#rplkddadrm .gt_column_spanner_outer {
+#lybnhlsdof .gt_column_spanner_outer {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -4166,13 +4160,13 @@ padding-bottom: 0;
 padding-left: 4px;
 padding-right: 4px;
 }
-#rplkddadrm .gt_column_spanner_outer:first-child {
+#lybnhlsdof .gt_column_spanner_outer:first-child {
 padding-left: 0;
 }
-#rplkddadrm .gt_column_spanner_outer:last-child {
+#lybnhlsdof .gt_column_spanner_outer:last-child {
 padding-right: 0;
 }
-#rplkddadrm .gt_column_spanner {
+#lybnhlsdof .gt_column_spanner {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
@@ -4183,10 +4177,10 @@ overflow-x: hidden;
 display: inline-block;
 width: 100%;
 }
-#rplkddadrm .gt_spanner_row {
+#lybnhlsdof .gt_spanner_row {
 border-bottom-style: hidden;
 }
-#rplkddadrm .gt_group_heading {
+#lybnhlsdof .gt_group_heading {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -4211,7 +4205,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 text-align: left;
 }
-#rplkddadrm .gt_empty_group_heading {
+#lybnhlsdof .gt_empty_group_heading {
 padding: 0.5px;
 color: #333333;
 background-color: #FFFFFF;
@@ -4225,13 +4219,13 @@ border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 vertical-align: middle;
 }
-#rplkddadrm .gt_from_md > :first-child {
+#lybnhlsdof .gt_from_md > :first-child {
 margin-top: 0;
 }
-#rplkddadrm .gt_from_md > :last-child {
+#lybnhlsdof .gt_from_md > :last-child {
 margin-bottom: 0;
 }
-#rplkddadrm .gt_row {
+#lybnhlsdof .gt_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -4249,7 +4243,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 overflow-x: hidden;
 }
-#rplkddadrm .gt_stub {
+#lybnhlsdof .gt_stub {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -4261,7 +4255,7 @@ border-right-color: #D3D3D3;
 padding-left: 5px;
 padding-right: 5px;
 }
-#rplkddadrm .gt_stub_row_group {
+#lybnhlsdof .gt_stub_row_group {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -4274,13 +4268,13 @@ padding-left: 5px;
 padding-right: 5px;
 vertical-align: top;
 }
-#rplkddadrm .gt_row_group_first td {
+#lybnhlsdof .gt_row_group_first td {
 border-top-width: 2px;
 }
-#rplkddadrm .gt_row_group_first th {
+#lybnhlsdof .gt_row_group_first th {
 border-top-width: 2px;
 }
-#rplkddadrm .gt_summary_row {
+#lybnhlsdof .gt_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -4289,14 +4283,14 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#rplkddadrm .gt_first_summary_row {
+#lybnhlsdof .gt_first_summary_row {
 border-top-style: solid;
 border-top-color: #D3D3D3;
 }
-#rplkddadrm .gt_first_summary_row.thick {
+#lybnhlsdof .gt_first_summary_row.thick {
 border-top-width: 2px;
 }
-#rplkddadrm .gt_last_summary_row {
+#lybnhlsdof .gt_last_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -4305,7 +4299,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#rplkddadrm .gt_grand_summary_row {
+#lybnhlsdof .gt_grand_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -4314,7 +4308,7 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#rplkddadrm .gt_first_grand_summary_row {
+#lybnhlsdof .gt_first_grand_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -4323,7 +4317,7 @@ border-top-style: double;
 border-top-width: 6px;
 border-top-color: #D3D3D3;
 }
-#rplkddadrm .gt_last_grand_summary_row_top {
+#lybnhlsdof .gt_last_grand_summary_row_top {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -4332,10 +4326,10 @@ border-bottom-style: double;
 border-bottom-width: 6px;
 border-bottom-color: #D3D3D3;
 }
-#rplkddadrm .gt_striped {
+#lybnhlsdof .gt_striped {
 background-color: rgba(128, 128, 128, 0.05);
 }
-#rplkddadrm .gt_table_body {
+#lybnhlsdof .gt_table_body {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -4343,7 +4337,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#rplkddadrm .gt_footnotes {
+#lybnhlsdof .gt_footnotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -4356,7 +4350,7 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#rplkddadrm .gt_footnote {
+#lybnhlsdof .gt_footnote {
 margin: 0px;
 font-size: 90%;
 padding-top: 4px;
@@ -4364,7 +4358,7 @@ padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#rplkddadrm .gt_sourcenotes {
+#lybnhlsdof .gt_sourcenotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -4377,64 +4371,64 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#rplkddadrm .gt_sourcenote {
+#lybnhlsdof .gt_sourcenote {
 font-size: 90%;
 padding-top: 4px;
 padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#rplkddadrm .gt_left {
+#lybnhlsdof .gt_left {
 text-align: left;
 }
-#rplkddadrm .gt_center {
+#lybnhlsdof .gt_center {
 text-align: center;
 }
-#rplkddadrm .gt_right {
+#lybnhlsdof .gt_right {
 text-align: right;
 font-variant-numeric: tabular-nums;
 }
-#rplkddadrm .gt_font_normal {
+#lybnhlsdof .gt_font_normal {
 font-weight: normal;
 }
-#rplkddadrm .gt_font_bold {
+#lybnhlsdof .gt_font_bold {
 font-weight: bold;
 }
-#rplkddadrm .gt_font_italic {
+#lybnhlsdof .gt_font_italic {
 font-style: italic;
 }
-#rplkddadrm .gt_super {
+#lybnhlsdof .gt_super {
 font-size: 65%;
 }
-#rplkddadrm .gt_footnote_marks {
+#lybnhlsdof .gt_footnote_marks {
 font-size: 75%;
 vertical-align: 0.4em;
 position: initial;
 }
-#rplkddadrm .gt_asterisk {
+#lybnhlsdof .gt_asterisk {
 font-size: 100%;
 vertical-align: 0;
 }
-#rplkddadrm .gt_indent_1 {
+#lybnhlsdof .gt_indent_1 {
 text-indent: 5px;
 }
-#rplkddadrm .gt_indent_2 {
+#lybnhlsdof .gt_indent_2 {
 text-indent: 10px;
 }
-#rplkddadrm .gt_indent_3 {
+#lybnhlsdof .gt_indent_3 {
 text-indent: 15px;
 }
-#rplkddadrm .gt_indent_4 {
+#lybnhlsdof .gt_indent_4 {
 text-indent: 20px;
 }
-#rplkddadrm .gt_indent_5 {
+#lybnhlsdof .gt_indent_5 {
 text-indent: 25px;
 }
-#rplkddadrm .katex-display {
+#lybnhlsdof .katex-display {
 display: inline-flex !important;
 margin-bottom: 0.75em !important;
 }
-#rplkddadrm div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#lybnhlsdof div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
 height: 0px !important;
 }
 </style>
@@ -4560,8 +4554,8 @@ height: 0px !important;
 </figure>
 </div>
 </div>
-<p>Accurate representation of property damage is the essential to creating an accurate and usable model. Due to inflation, property damage values from 20 years ago is not an accurate representation of present day dollars. To improve accuraces,the NOAA data utilized for the model was reduced to the past six years, starting in January 2020. The sample size in this data range was large enough for the Random Forest Model, while portraying meaningful property damage amounts.</p>
-<p>To strengthen the model, rainfall data was collected from the <a href="https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily">Global Historical Climatology Network Daily (GHCN-Daily)</a>. Every county with the expection of Calhoun County, had precipitation gauges. For Calhoun County, precipitation data was collected from the four souronding counties (Bay, Gulf, Jackson, and Libery Counties) and averaged per day. <a href="#fig-monthly-rainfall-county" class="quarto-xref">Figure 5</a> illustrates the monthly average rainfall per county in Northwest Florida.</p>
+<p>Accurate representation of property damage is essential to creating an accurate and usable model. Due to inflation, property damage values from 20 years ago is not an accurate representation of present day dollars. To improve accuracy, the NOAA data utilized for the model was reduced to the past six years, starting in January 2020. The sample size in this data range was large enough for the Random Forest Model, while portraying meaningful property damage amounts.</p>
+<p>To strengthen the model, rainfall data was collected from the <a href="https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily">Global Historical Climatology Network Daily (GHCN-Daily)</a>. Every county with the exception of Calhoun County had precipitation gauges. For Calhoun County, precipitation data was collected from the four surrounding counties (Bay, Gulf, Jackson, and Liberty Counties) and averaged per day. <a href="#fig-monthly-rainfall-county" class="quarto-xref">Figure 5</a> illustrates the monthly average rainfall per county in Northwest Florida.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-monthly-rainfall-county" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
@@ -4591,7 +4585,7 @@ Figure 6. Average Number of Flood Events per Month
 </div>
 </div>
 </div>
-<p>In order to verify this theory, rainfall daily maximums were calcualted per month (<a href="#fig-max-daily-rainfall" class="quarto-xref">Figure 7</a>). This figures shows that rainfall daily maximums are highest in September, suggesting that September experiences high-intesntiy but less frequent rainfall events which may contribute to more frequent flooding events.</p>
+<p>In order to verify this theory, rainfall daily maximums were calculated per month (<a href="#fig-max-daily-rainfall" class="quarto-xref">Figure 7</a>). This figure shows that rainfall daily maximums are highest in September, suggesting that September experiences high-intensity but less frequent rainfall events which may contribute to more frequent flooding events.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div id="fig-max-daily-rainfall" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
@@ -4693,8 +4687,19 @@ Figure 10. Average Predicted Flood Damage by County
 </div>
 </div>
 </div>
-
 </section>
+</section>
+<section id="discusssion" class="level2">
+<h2 class="anchored" data-anchor-id="discusssion">Discusssion</h2>
+<p>The results of this study showed that the random forest model had a limited ability to predict flood damage, as demonstrated by the low R² values across each model. This suggests that flood damage is influenced by factors not included in this study. Previous research on flood susceptibility using random forest has utilized variables such as elevation, slope, aspect, distance to streams, distance to rivers, distance to roads, land cover, topographic wetness index, stream power index, and plan and profile curvature. These studies found that elevation, slope, and proximity to rivers and streams were the primary controlling factors influencing flood susceptibility (<span class="citation" data-cites="wahba2024flood">Wahba et al. (<a href="#ref-wahba2024flood" role="doc-biblioref">2024</a>)</span>).</p>
+<p>The limitations to this study were the number and type of variables utilized, which shows the complexity of flooding. Floods don’t only occur due to heavy rainfall, but are also influenced by geophysical factors.</p>
+<p>This study highlights the need for further research in this area and suggests that the inclusion of additional variables is critical for improving the prediction of flood damage.</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>The random forest model is a machine learning method that is useful for classifying information and predicting outcomes. When applied to the flood damage study set, the random forest algorithm was unable to capture the total damage using multiple variables over four model types. Our best model type was transformed to include 1-day prior rainfall, population, housing units, and median home value, and continued to exclude zero-damage events. The focus on the short-term rainfall occurrences was used to inform damage predictions due to the random forest modeling type. The random forest model handles short-term predictions well due to the model handling noise and non-stationary features of datasets. In conclusion, the model improvements indicated the importance value of certain flooding variables within the model’s prediction. The factors of importance included removing zero damage flooding events to improve damage accuracy, mitigating noise factors that were introduced to the model, and simplifying predictive analysis to a short-term focus type (1 day rainfall).</p>
+<p>The finalized model experienced limited capabilities of predicting flood damage estimations. However, a comparative analysis of our original analyzed model one versus our finalized model four revealed the improvement in actual vs. predicted values. The study revealed high damage counties in Northwest Florida, the top five in order being: Washington, Walton, Liberty, Calhoun, and Leon County. The top five counties of average predicted damage ranged in value, from the lowest prediction being &lt;$500,000 in damage and the highest prediction totaling &gt;$4,000,000 dollars in damages.</p>
+
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
@@ -4769,6 +4774,9 @@ Tan, X. Z., Y. Li, X. X. Wu, C. Dai, X. L. Zhang, and Y. P. Cai. 2024. <span>“
 </div>
 <div id="ref-ACS2024" class="csl-entry" role="listitem">
 U.S. Census Bureau. 2024. <span>“American Community Survey 5-Year Estimates.”</span> <a href="https://data.census.gov">https://data.census.gov</a>.
+</div>
+<div id="ref-wahba2024flood" class="csl-entry" role="listitem">
+Wahba, Mohamed, Radwa Essam, Mustafa El-Rawy, Nassir Al-Arifi, Fathy Abdalla, and Wael M. Elsadek. 2024. <span>“Forecasting of Flash Flood Susceptibility Mapping Using Random Forest Regression Model and Geographic Information Systems.”</span> <em>Heliyon</em> 10 (13): e33982. <a href="https://doi.org/10.1016/j.heliyon.2024.e33982">https://doi.org/10.1016/j.heliyon.2024.e33982</a>.
 </div>
 <div id="ref-Wang2015FloodRF" class="csl-entry" role="listitem">
 Wang, Z., C. Lai, X. Chen, B. Yang, S. Zhao, and X. Bai. 2015. <span>“Flood Hazard Risk Assessment Model Based on Random Forest.”</span> <em>Journal of Hydrology</em> 527: 1130–41. <a href="https://doi.org/10.1016/j.jhydrol.2015.06.008">https://doi.org/10.1016/j.jhydrol.2015.06.008</a>.
