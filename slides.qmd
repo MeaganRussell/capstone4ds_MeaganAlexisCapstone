@@ -16,50 +16,43 @@ bibliography: references.bib
 csl: https://www.zotero.org/styles/apa
 ---
 
-
 ## Introduction
 
 Why:
 
-- Flooding is a frequent and costly hazard in Northwest Florida  
-- Damage varies widely across flood events  
-- Understanding what drives this variability can help improve planning and mitigation efforts
+-   Flooding is a frequent and costly hazard in Northwest Florida\
+-   Damage varies widely across flood events\
+-   Understanding what drives this variability can help improve planning and mitigation efforts
 
 Research Focus and Goal:
 
-- This study examines flood events across 16 counties in Northwest Florida  
-- Uses historical data on flood events, rainfall, and county characteristics  
-- The goal is to explore whether these factors can help explain flood damage  
+-   This study examines flood events across 16 counties in Northwest Florida\
+-   Uses historical data on flood events, rainfall, and county characteristics\
+-   The goal is to explore whether these factors can help explain flood damage
 
 ## Key Questions
 
-::: {.columns valign="center"}
-
+::::: {.columns valign="center"}
 ::: {.column width="45%"}
-
 ### What drives flood damage?
 
-- Can rainfall patterns improve prediction?  
-- Do county-level characteristics matter?  
+-   Can rainfall patterns improve prediction?\
+-   Do county-level characteristics matter?
 
 ### How can Machine Learning help?
 
-- Can Random Forest be used to predict flood damage?
-- If so, what variables are the most useful?
-
+-   Can Random Forest be used to predict flood damage?
+-   If so, what variables are the most useful?
 :::
 
 ::: {.column width="50%"}
+![](Flood.jpg){width="100%" height="180px" style="margin-top:-10px;"}
 
-![](Flood.jpg){width=100% height=180px style="margin-top:-10px;"}
+![](Flood2.jpg){width="100%" height="180px" style="margin-top:-10px;"}
 
-![](Flood2.jpg){width=100% height=180px style="margin-top:-10px;"}
-
-![](Flood3.jpg){width=100% height=180px style="margin-top:-10px;"}
-
+![](Flood3.jpg){width="100%" height="180px" style="margin-top:-10px;"}
 :::
-
-:::
+:::::
 
 ```{r}
 library(sf)
@@ -108,7 +101,7 @@ map_plot <- ggplot() +
 
 ## Statiscial Method: Random Forest
 
-Random forest is a flexible, buildable, and straightforward machine learning method. Random forest produces hundreds of decision trees and binary splitting to determine the best split per possible variable. Each tree is trained with a random parameter, and the splitting function is used for the selection of the more fitting observable variable. 
+Random forest is a flexible, buildable, and straightforward machine learning method. Random forest produces hundreds of decision trees and binary splitting to determine the best split per possible variable. Each tree is trained with a random parameter, and the splitting function is used for the selection of the more fitting observable variable.
 
 ```{dot}
 //| label: fig-random-forest
@@ -165,41 +158,33 @@ Figure 1. Conceptual example of a random forest model showing multiple decision 
 
 ## Features
 
-::: {.columns}
-
+:::::: columns
 ::: {.column width="33%"}
-
 ### Assumptions
 
-- Each tree makes its own decisions.  
-- Data points are chosen randomly to reduce mistakes.  
-- Sufficient data ensures the trees have unique patterns and variety.  
-- Combining the predictions from different trees leads to a more accurate final result.  
-
+-   Each tree makes its own decisions.\
+-   Data points are chosen randomly to reduce mistakes.\
+-   Sufficient data ensures the trees have unique patterns and variety.\
+-   Combining the predictions from different trees leads to a more accurate final result.
 :::
 
 ::: {.column width="33%"}
-
 ### Advantages
 
-- Easy to identify importance of features  
-- Multiple decision trees tend to cause little risk of overfitting (not too close to original training data)  
-- Very accurate due to multiple subgroups  
-- Less need for data management (pre-processing to perform random forest)  
-
+-   Easy to identify importance of features\
+-   Multiple decision trees tend to cause little risk of overfitting (not too close to original training data)\
+-   Very accurate due to multiple subgroups\
+-   Less need for data management (pre-processing to perform random forest)
 :::
 
 ::: {.column width="33%"}
-
 ### Limitations
 
-- Slower to acquire observations for best decision making  
-- Bound by the lowest and highest observations (no extrapolate)  
-- Difficult to interpret the decisions of ‘best features’ seen with trees  
-
+-   Slower to acquire observations for best decision making\
+-   Bound by the lowest and highest observations (no extrapolate)\
+-   Difficult to interpret the decisions of ‘best features’ seen with trees
 :::
-
-:::
+::::::
 
 ## Formula
 
@@ -209,32 +194,57 @@ $$
 MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2
 $$
 
-
-
 ## Study Area
 
-::: columns
-
+:::::: columns
 ::: {.column width="55%"}
-
 ```{r, echo=FALSE, fig.width=8, fig.height=6, out.width='100%'}
 map_plot
 ```
-
 :::
 
-::: {.column width="45%"}
-
-<div style="font-size: 0.72em; line-height: 1.35; margin-top: 40px;">
-
+:::: {.column width="45%"}
+::: {style="font-size: 0.72em; line-height: 1.35; margin-top: 40px;"}
 <strong>Counties Included</strong>
 
-<ol> <li>Escambia</li> <li>Santa Rosa</li> <li>Okaloosa</li> <li>Walton</li> <li>Holmes</li> <li>Washington</li> <li>Bay</li> <li>Jackson</li> <li>Calhoun</li> <li>Gulf</li> <li>Franklin</li> <li>Liberty</li> <li>Gadsden</li> <li>Leon</li> <li>Wakulla</li> <li>Jefferson</li> </ol> </div>
+<ol>
 
+<li>Escambia</li>
+
+<li>Santa Rosa</li>
+
+<li>Okaloosa</li>
+
+<li>Walton</li>
+
+<li>Holmes</li>
+
+<li>Washington</li>
+
+<li>Bay</li>
+
+<li>Jackson</li>
+
+<li>Calhoun</li>
+
+<li>Gulf</li>
+
+<li>Franklin</li>
+
+<li>Liberty</li>
+
+<li>Gadsden</li>
+
+<li>Leon</li>
+
+<li>Wakulla</li>
+
+<li>Jefferson</li>
+
+</ol>
 :::
-
-:::
-
+::::
+::::::
 
 # Analysis and Results {.center}
 
@@ -341,7 +351,7 @@ ggplot(floodcountall, aes(x = "", y = percent, fill = EVENT_TYPE)) +
   theme_void()
 ```
 
-## Food Events Per County 
+## Flood Events Per County
 
 ```{r}
 #| label: fig-flood-events-county
@@ -380,7 +390,6 @@ stormevents %>%
 ```
 
 ## Flood Events Over Time
-
 
 ```{r}
 #| label: fig-flood-damage-time
@@ -457,7 +466,6 @@ ggplot(yearly_data, aes(x = year)) +
   theme_minimal(base_size = 14)
 ```
 
-
 ## Census Data
 
 ```{r}
@@ -503,7 +511,7 @@ census_data %>%
   )
 ```
 
-## Rainfall 
+## Rainfall
 
 ```{r}
 #| label: fig-monthly-rainfall-county
@@ -546,7 +554,7 @@ ggplot(monthly_avg, aes(x = month, y = avg_monthly_rain_in)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-## Average Flood Events 
+## Average Flood Events
 
 ```{r}
 #| label: fig-monthly-flood-events
@@ -579,13 +587,11 @@ ggplot(monthly_floods, aes(x = month, y = avg_events)) +
 
 ## Model Explanation
 
-- Model 1 used 1-day, 3-day, and 7-day prior rainfall, population, housing units, and median home value to predict total damage.
-- Later models tested whether removing zero-damage events improved performance.
-- Model 4 simplified the predictor set to 1-day prior rainfall, population, housing units, and median home value.
-- The goal was to see whether a simpler model could better predict total flood damage.
-
-
-
+-   Data was split using a 70/30 split.
+-   Model 1 used 1-day, 3-day, and 7-day prior rainfall, population, housing units, and median home value to predict total damage.
+-   Later models tested whether removing zero-damage events improved performance.
+-   Model 4 simplified the predictor set to 1-day prior rainfall, population, housing units, and median home value.
+-   The goal was to see whether a simpler model could better predict total flood damage.
 
 ```{r}
 #| echo: false
@@ -634,6 +640,7 @@ nrow(flood_events)
 table(flood_events$EVENT_TYPE)
 names(flood_events)
 ```
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -663,6 +670,7 @@ county_daily_rain %>%
   count(county_key, DATE) %>%
   filter(n > 1)
 ```
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -682,6 +690,7 @@ county_daily_rain_complete <- county_daily_rain %>%
   ) %>%
   ungroup()
 ```
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -721,6 +730,7 @@ county_rain_windows %>%
 
 
 ```
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -749,7 +759,6 @@ county_rain_windows <- county_daily_rain_complete %>%
     rain_7day_prior = replace_na(rain_7day_prior, 0)
   )
 ```
-
 
 ```{r}
 #| echo: false
@@ -783,6 +792,7 @@ flood_with_context %>%
   distinct() %>%
   print(n = 20)
 ```
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -807,7 +817,6 @@ flood_model_data <- flood_with_context %>%
     log_damage = log1p(DAMAGE_PROPERTY_NUM)
   )
 ```
-
 
 ```{r}
 #| echo: false
@@ -847,7 +856,6 @@ nrow(flood_model_clean)
 summary(flood_model_clean)
 ```
 
-
 ```{r}
 #| echo: false
 #| warning: false
@@ -868,6 +876,7 @@ test_data  <- flood_model_clean[-train_index, ]
 nrow(train_data)
 nrow(test_data)
 ```
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -885,6 +894,7 @@ rf_model <- randomForest(
 
 rf_model
 ```
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -902,7 +912,6 @@ r2
 importance(rf_model)
 varImpPlot(rf_model)
 ```
-
 
 ```{r}
 #| echo: false
@@ -956,9 +965,6 @@ r22 <- cor(pred2, test_data2$log_damage)^2
 rmse2
 r22
 ```
-
-
-
 
 ```{r}
 #| echo: false
@@ -1020,7 +1026,6 @@ importance(rf_model2)
 varImpPlot(rf_model2)
 ```
 
-
 ```{r}
 #| echo: false
 #| warning: false
@@ -1064,6 +1069,7 @@ county_damage_rank <- test_data2 %>%
 
 county_damage_rank
 ```
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -1074,6 +1080,7 @@ county_damage_rank
 county_damage_rank %>%
   filter(n_events >= 5)
 ```
+
 ```{r}
 #| echo: false
 #| warning: false
@@ -1145,7 +1152,6 @@ p2 <- ggplot(model_results, aes(x = Model, y = RMSE)) +
   )
 ```
 
-
 ```{r}
 #| echo: false
 #| warning: false
@@ -1173,6 +1179,7 @@ results_all <- results_all %>%
   )
 
 ```
+
 ## Predicted vs. Actual Flood Damage
 
 ```{r}
@@ -1253,29 +1260,34 @@ ggplot(county_damage_rank_top,
 
 ## Discussion
 
-- Random forest showed limited ability to predict flood damage (low R²)  
-- Flood damage likely influenced by missing variables  
-- Prior studies show elevation, slope, and proximity to rivers/streams are key factors 
+-   Random forest showed limited ability to predict flood damage (low R²)\
 
-- Limitations: limited variables; flooding influenced by geophysical factors  
+-   Flood damage likely influenced by missing variables\
 
-- Future: additional variables needed to improve prediction  
+-   Prior studies show elevation, slope, and proximity to rivers/streams are key factors
+
+-   Limitations: limited variables; flooding influenced by geophysical factors
+
+-   Future: additional variables needed to improve prediction
 
 ## Conclusion
 
-- Random forest showed **limited ability** to predict flood damage  
+-   Random forest showed **limited ability** to predict flood damage
 
-- Best model:
-  - 1-day rainfall + population + housing + home value  
-  - excluded zero-damage events  
+-   Best model:
 
-- Improvements:
-  - reduced noise  
-  - better actual vs predicted values  
+    -   1-day rainfall + population + housing + home value\
+    -   excluded zero-damage events
 
-- Highest damage counties:
-  - Washington, Walton, Liberty, Calhoun, Leon  
-  
+-   Improvements:
+
+    -   reduced noise\
+    -   better actual vs predicted values
+
+-   Highest damage counties:
+
+    -   Washington, Walton, Liberty, Calhoun, Leon
+
 ---
 nocite: |
   @Javadinejad2022
@@ -1315,4 +1327,3 @@ nocite: |
 :::
 
 # Questions? {.center}
-

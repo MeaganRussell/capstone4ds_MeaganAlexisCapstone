@@ -231,7 +231,7 @@ Data from the Global Historical Climatology Network Daily was collected and prec
 
 Wakulla County did not have any precipitation gauges in the county, so precipitation data was collected from the four surrounding counties (Jefferson, Liberty, Leon, Franklin). All days were averaged for the four counties to offer a representation of Wakulla County. In addition, new columns were created for 1-day, 3-day, and 7-day average rainfall prior to a known flood event. 
 
-Once all data sources spreadsheets were cleaned up they were merged into one spreadsheet using county name. 
+Once all data sources spreadsheets were cleaned up they were merged into one spreadsheet using county name.
 
 ### Data Visualization
 
@@ -572,6 +572,9 @@ I also made sure:
 every day existed (even if it was 0 rain)
 missing values were treated as 0
 -->
+
+
+To develop and evaluate the models the data was separated using a 70/30 split with 70% for training and 30% for validation. 
 
 ```{r}
 #| echo: false
