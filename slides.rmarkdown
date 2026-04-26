@@ -16,6 +16,8 @@ bibliography: references.bib
 csl: https://www.zotero.org/styles/apa
 ---
 
+
+
 ## Introduction
 
 Why:
@@ -53,6 +55,8 @@ Research Focus and Goal:
 ![](Flood3.jpg){width="100%" height="180px" style="margin-top:-10px;"}
 :::
 :::::
+
+
 
 ```{r}
 library(sf)
@@ -99,9 +103,13 @@ map_plot <- ggplot() +
   )
 ```
 
+
+
 ## Statiscial Method: Random Forest
 
 Random forest is a flexible, buildable, and straightforward machine learning method. Random forest produces hundreds of decision trees and binary splitting to determine the best split per possible variable. Each tree is trained with a random parameter, and the splitting function is used for the selection of the more fitting observable variable.
+
+
 
 ```{dot}
 //| label: fig-random-forest
@@ -154,6 +162,8 @@ digraph random_forest_example {
 }
 ```
 
+
+
 ## Features
 
 :::::: columns
@@ -196,9 +206,13 @@ $$
 
 :::::: columns
 ::: {.column width="55%"}
+
+
 ```{r, echo=FALSE, fig.width=8, fig.height=6, out.width='100%'}
 map_plot
 ```
+
+
 :::
 
 :::: {.column width="45%"}
@@ -247,6 +261,8 @@ map_plot
 # Analysis and Results {.center}
 
 ## Data Sources
+
+
 
 ```{r}
 #| label: tbl-table-one
@@ -313,7 +329,11 @@ variable_table %>%
 
 ```
 
+
+
 ## Data Visualization
+
+
 
 ```{r}
 #| label: fig-flood-event-pie
@@ -349,7 +369,11 @@ ggplot(floodcountall, aes(x = "", y = percent, fill = EVENT_TYPE)) +
   theme_void()
 ```
 
+
+
 ## Flood Events Per County
+
+
 
 ```{r}
 #| label: fig-flood-events-county
@@ -387,7 +411,11 @@ stormevents %>%
   )
 ```
 
+
+
 ## Flood Events Over Time
+
+
 
 ```{r}
 #| label: fig-flood-damage-time
@@ -464,7 +492,11 @@ ggplot(yearly_data, aes(x = year)) +
   theme_minimal(base_size = 14)
 ```
 
+
+
 ## Census Data
+
+
 
 ```{r}
 #| label: tbl-census-nwfl
@@ -509,7 +541,11 @@ census_data %>%
   )
 ```
 
+
+
 ## Rainfall
+
+
 
 ```{r}
 #| label: fig-monthly-rainfall-county
@@ -552,7 +588,11 @@ ggplot(monthly_avg, aes(x = month, y = avg_monthly_rain_in)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
+
+
 ## Average Flood Events
+
+
 
 ```{r}
 #| label: fig-monthly-flood-events
@@ -583,6 +623,8 @@ ggplot(monthly_floods, aes(x = month, y = avg_events)) +
    theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
+
+
 ## Model Explanation
 
 -   Data was split using a 70/30 split.
@@ -590,6 +632,8 @@ ggplot(monthly_floods, aes(x = month, y = avg_events)) +
 -   Later models tested whether removing zero-damage events improved performance.
 -   Model 4 simplified the predictor set to 1-day prior rainfall, population, housing units, and median home value.
 -   The goal was to see whether a simpler model could better predict total flood damage.
+
+
 
 ```{r}
 #| echo: false
@@ -1105,7 +1149,11 @@ county_actual_damage
 left_join(county_damage_rank, county_actual_damage, by = "County")
 ```
 
+
+
 ## Model Performance Comparison
+
+
 
 ```{r}
 #| label: fig-rsme-progression
@@ -1178,7 +1226,11 @@ results_all <- results_all %>%
 
 ```
 
+
+
 ## Predicted vs. Actual Flood Damage
+
+
 
 ```{r}
 #| label: fig-predicted-vs-actual-log
@@ -1215,7 +1267,11 @@ theme(
 )
 ```
 
+
+
 ## Top Five Counties
+
+
 
 ```{r}
 #| label: fig-top-five-counties
@@ -1256,6 +1312,8 @@ ggplot(county_damage_rank_top,
   theme_minimal()
 ```
 
+
+
 ## Discussion
 
 -   Random forest showed limited ability to predict flood damage (low R²)\
@@ -1285,6 +1343,8 @@ ggplot(county_damage_rank_top,
 -   Highest damage counties:
 
     -   Washington, Walton, Liberty, Calhoun, Leon
+
+
 
 ---
 nocite: |
@@ -1319,9 +1379,12 @@ nocite: |
   @wahba2024flood
 ---
 
+
+
 ## References
 
 ::: {#refs}
 :::
 
 # Questions? {.center}
+
